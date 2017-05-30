@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "main", "main\main.cproj", "{09208964-7687-4F1D-BEC3-C421C98BE6B5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897} = {DCE6C7E3-EE26-4D79-826B-08594B9AD897}
+	EndProjectSection
+EndProject
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "lcd", "lcd\lcd.cproj", "{DCE6C7E3-EE26-4D79-826B-08594B9AD897}"
+EndProject
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "ff_avr", "ff_avr\ff_avr.cproj", "{949BC362-9B40-4C14-B382-BD5414A36778}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		default|AVR = default|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Debug|AVR.ActiveCfg = Debug|AVR
+		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Debug|AVR.Build.0 = Debug|AVR
+		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.default|AVR.ActiveCfg = Debug|AVR
+		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.default|AVR.Build.0 = Debug|AVR
+		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Release|AVR.ActiveCfg = Release|AVR
+		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Release|AVR.Build.0 = Release|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|AVR.ActiveCfg = Debug|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|AVR.Build.0 = Debug|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.default|AVR.ActiveCfg = Debug|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.default|AVR.Build.0 = Debug|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|AVR.ActiveCfg = Release|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|AVR.Build.0 = Release|AVR
+		{949BC362-9B40-4C14-B382-BD5414A36778}.Debug|AVR.ActiveCfg = Debug|AVR
+		{949BC362-9B40-4C14-B382-BD5414A36778}.Debug|AVR.Build.0 = Debug|AVR
+		{949BC362-9B40-4C14-B382-BD5414A36778}.default|AVR.ActiveCfg = Debug|AVR
+		{949BC362-9B40-4C14-B382-BD5414A36778}.default|AVR.Build.0 = Debug|AVR
+		{949BC362-9B40-4C14-B382-BD5414A36778}.Release|AVR.ActiveCfg = Release|AVR
+		{949BC362-9B40-4C14-B382-BD5414A36778}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
