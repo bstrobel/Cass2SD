@@ -31,6 +31,8 @@ typedef enum {SPACE=0, ONE, ZERO} BIT_TYPE;
 uint8_t buf[SEND_BUF_SIZE]; //send buffer
 uint8_t* start_buf_ptr = buf;
 
+volatile SEND_STATE send_state;
+
 FIL fhdl;
 FRESULT fr;
 
@@ -60,16 +62,28 @@ ISR(TIMER0_COMPA_vect)
 	#endif
 }
 
-void timer0_init()
+ISR(INT0_vect)
+{
+
+}
+
+void kc_cass_interface_init()
 {
 	TCCR0A = _BV(WGM01); // CTC mode -> TOP is OCR0A
 	CASS_OUT_DDR |= _BV(CASS_OUT_PIN); // Configure output pin as OUTPUT
 	CASS_OUT_PORT &= ~(_BV(CASS_OUT_PIN)); // Initialize output pin to LOW
+
+	CASS_IN_DDR &= ~_BV(CASS_IN_PIN); // Configure input pin as INPUT
+	CASS_IN_PORT &= ~_BV(CASS_IN_PIN); // Disable pullup
+	EIMSK &= ~_BV(INT0); // make sure INT0 pin interrupts are disable
+	EICRA = _BV(ISC00); // any change in logical level on pin will generate int
+
 	#ifdef DEBUG_TIMER
 	TIMER_OVF_MONITOR_DDR |= _BV(TIMER_OVF_MONITOR_BIT);
 	TIMER_OVF_MONITOR_PORT &= ~_BV(TIMER_OVF_MONITOR_BIT);
 	#endif
 }
+
 // sends the specified bit using Timer0
 // blocks until the bit is sent only if bit_type!=SPACE
 // this gives us time to reload buffer and do computation while sending the space
@@ -237,4 +251,10 @@ void send_file(FILINFO* Finfo)
 		f_close(&fhdl);
 	}
 
+}
+
+void record_file(FILINFO* Finfo)
+{
+	EIFR &= _BV(INT0); // clear int flag reg
+	EIMSK |= _BV(INT0); // enable int INT0
 }

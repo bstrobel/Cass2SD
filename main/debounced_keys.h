@@ -8,6 +8,7 @@
 
 #ifndef DEBOUNCED_KEYS_H_
 #define DEBOUNCED_KEYS_H_
+#include <stdbool.h>
 
 #ifndef DEBOUNCE_COUNTER_MAX
 #	define DEBOUNCE_COUNTER_MAX 2
@@ -31,5 +32,14 @@ extern volatile uint8_t keys_changed_bitmap;
 
 extern void handle_keys(void);
 extern void keys_init(void);
+
+typedef enum {STAY=0, UP, DOWN} DIRECTION;
+
+#define START_STOP_KEY 0
+#define ROTARY_A START_STOP_KEY + 1
+#define ROTARY_B ROTARY_A + 1
+
+extern volatile DIRECTION display_task;
+extern volatile bool select_key_pressed;
 
 #endif /* DEBOUNCED_KEYS_H_ */

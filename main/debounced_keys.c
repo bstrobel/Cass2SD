@@ -9,6 +9,10 @@
 #include "debounced_keys.h"
 #include <avr/io.h>
 #include <avr/sfr_defs.h>
+#include <stdbool.h>
+
+volatile DIRECTION display_task = STAY;
+volatile bool select_key_pressed;
 
 static volatile uint8_t debounce_counter[NUM_KEYS];
 

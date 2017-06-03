@@ -12,6 +12,8 @@ Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "lcd", "lcd\lcd.cproj", "{DC
 EndProject
 Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "ff_avr", "ff_avr\ff_avr.cproj", "{949BC362-9B40-4C14-B382-BD5414A36778}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{12F6A346-FC36-487F-A635-5C59EB4E0909}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AVR = Debug|AVR

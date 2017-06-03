@@ -14,13 +14,13 @@
 #define CASS_OUT_PIN PORTD1 //Pin 3 for ATMega328P
 #define CASS_IN_PORT PORTD
 #define CASS_IN_DDR DDRD
-#define CASS_IN_PIN PORTD0 //Pin 2 for ATMega328P
+#define CASS_IN_PIN PORTD2 //Pin 4 for ATMega328P
 
 typedef enum {DONE=0, FIRST_HALF, SECOND_HALF} SEND_STATE;
-
-volatile SEND_STATE send_state;
+extern volatile SEND_STATE send_state;
 
 void send_file(FILINFO*);
-void timer0_init(void);
+void record_file(FILINFO*);
+void kc_cass_interface_init(void);
 
 #endif /* KC_CASS_INTERFACE_H_ */
