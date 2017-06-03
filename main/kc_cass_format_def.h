@@ -1,15 +1,16 @@
 /*
- * format.h
+ * kc_cass_format_def.h
  *
- * Created: 01.05.2017 13:32:31
+ * Created: 03.06.2017 14:51:38
  *  Author: Bernd
  */ 
 
 
-#ifndef FORMAT_H_
-#define FORMAT_H_
+#ifndef KC_CASS_FORMAT_DEF_H_
+#define KC_CASS_FORMAT_DEF_H_
 
 #include <stdint.h>
+#define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
 
 const prog_char tap_header_str[] = "\xc3KC-TAPE by AF. ";
@@ -30,7 +31,7 @@ typedef struct{
 	uint8_t sby;
 } KC_FCB_MC;
 
-typedef struct 
+typedef struct
 {
 	char dateityp[3];
 	char dateiname[8];
@@ -38,4 +39,4 @@ typedef struct
 	uint16_t adr2;
 } KC_FCB_BASIC;
 
-#endif /* FORMAT_H_ */
+#endif /* KC_CASS_FORMAT_DEF_H_ */
