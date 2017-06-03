@@ -42,14 +42,27 @@ volatile SEND_STATE send_state;
 uint8_t buf[SEND_BUF_SIZE]; //send buffer
 uint8_t* start_buf_ptr = buf;
 
+const prog_char dotdotdir_str[] = ".. [GO UP]";
+const prog_char record_cmd_str[] = "[RECORD HERE]";
+const prog_char dir_str[] = "[DIR]";
+const prog_char empty_dir_str[] = "[Empty Dir]";
+const prog_char pct_s_str[] = "%s";
+const prog_char pct_d_str[] = "%d";
+
+#define DIR_IDX_REC 0
+#define DIR_IDX_GO_UP DIR_IDX_REC + 1
+#define DIR_IDX_FIRST_FILE DIR_IDX_GO_UP + 1
+
 DWORD sect = 0;
 DSTATUS init_stat = STA_NOINIT;
-DIR Dir;			/* Directory object */
-FILINFO Finfo;
+DIR Dir;			/* http://elm-chan.org/fsw/ff/doc/sdir.html */
+#define DIR_NAME_SIZE 13
+char dir_name[DIR_NAME_SIZE]; // 8 char name, 1 char dot, 3 char ext, \0 byte
+FILINFO Finfo; /* http://elm-chan.org/fsw/ff/doc/sfileinfo.html */
 FIL fhdl;
 FRESULT fr;
 FATFS FatFs;		/* File system object for each logical drive */
-uint16_t dir_idx = 0;
+int16_t dir_idx = 0;
 
 static void put_rc (FRESULT rc)
 {
@@ -329,35 +342,43 @@ static void send_file()
 
 static void display_fileinfo()
 {
-		lcd_clrscr();
-		xprintf(PSTR("%s"),	Finfo.fname);
-		lcd_gotoxy(0,1);
-		if (Finfo.fattrib & AM_DIR) {
-			xprintf(PSTR("[DIR]"));
-		}
-		else
+	lcd_clrscr();
+	switch (dir_idx)
+	{
+		case DIR_IDX_REC:
 		{
-			xprintf(PSTR("%d"),	Finfo.fsize);
+			xprintf(pct_s_str, dir_name);
+			lcd_gotoxy(0,1);
+			xprintf(record_cmd_str);
+			break;
 		}
-}
-
-static void display_next()
-{
-	if (dir_idx < UINT16_MAX)
-	{
-		f_readdir(&Dir,&Finfo);
-	}
-	if (!Finfo.fname[0])
-	{
-		return;
-	}
-	else
-	{
-		if (dir_idx < UINT16_MAX)
+		case DIR_IDX_GO_UP:
 		{
-			dir_idx++;
+			xprintf(pct_s_str, dir_name);
+			lcd_gotoxy(0,1);
+			xprintf(dotdotdir_str);
+			break;
 		}
-		display_fileinfo();
+		default:
+		{
+			if (dir_idx == DIR_IDX_FIRST_FILE && !Finfo.fname[0])
+			{
+				xprintf(empty_dir_str);
+			}
+			else
+			{
+				xprintf(pct_s_str, Finfo.fname);
+				lcd_gotoxy(0,1);
+				if (Finfo.fattrib & AM_DIR) {
+					xprintf(dir_str);
+				}
+				else
+				{
+					xprintf(pct_d_str, Finfo.fsize);
+			}
+			}
+			break;
+		}
 	}
 }
 
@@ -365,16 +386,43 @@ static void display_prev()
 {
 	if (dir_idx > 0)
 	{
-		f_closedir(&Dir);
-		f_opendir(&Dir,"/");
-		for (uint16_t i=0;i<dir_idx;i++)
-		{
-			f_readdir(&Dir,&Finfo);
-		}
 		dir_idx--;
+		f_closedir(&Dir);
+		if (dir_idx >= DIR_IDX_FIRST_FILE)
+		{
+			// FAT lib doesn't provide a way to go backwards through the list of files
+			// So we close the dir and reopen it and flip through until the new dir_idx
+			f_opendir(&Dir,".");
+			for (int16_t i=DIR_IDX_FIRST_FILE; i<=dir_idx; i++)
+			{
+				f_readdir(&Dir,&Finfo);
+			}
+		}
 		display_fileinfo();
 	}
 
+}
+
+static void display_next()
+{
+	if (dir_idx < INT16_MAX)
+	{
+		dir_idx++;
+		if (dir_idx == DIR_IDX_FIRST_FILE)
+		{
+			f_opendir(&Dir,".");
+		}
+		if (dir_idx >= DIR_IDX_FIRST_FILE)
+		{
+			f_readdir(&Dir,&Finfo);
+			if (!Finfo.fname[0])
+			{
+				display_prev(); // We're over the edge, step back!
+				return;
+			}
+		}
+	}
+	display_fileinfo();
 }
 
 /************************************************************************/
@@ -418,18 +466,10 @@ int main(void)
 		}
 	} 
 	while (fr != FR_OK);
-
-	fr = f_opendir(&Dir, "/");
-	if (fr) {
-		put_rc(fr);
-	}
+	
+	f_getcwd(dir_name,DIR_NAME_SIZE);
+	dir_idx = -1;
 	display_next();
-	dir_idx = 0;
-	if (!Finfo.fname[0])
-	{
-		lcd_clrscr();
-		xprintf(PSTR("[Empty Dir]"));
-	}
 	
 	while(1)
 	{
@@ -448,10 +488,42 @@ int main(void)
 		}
 		if (select_key_pressed)
 		{
-			send_file();
-			while(send_state!=DONE)
+			switch (dir_idx)
 			{
-				// wait for finish before going to sleep
+				case DIR_IDX_REC:
+				{
+					break;
+				}
+				case DIR_IDX_GO_UP:
+				{
+					f_chdir("..");
+					f_getcwd(dir_name, DIR_NAME_SIZE);
+					dir_idx = -1;
+					display_next();
+					break;
+				}
+				default:
+				{
+					if (Finfo.fattrib & AM_DIR)
+					{
+						f_chdir(Finfo.fname);
+						f_getcwd(dir_name, DIR_NAME_SIZE);
+						dir_idx = -1;
+						display_next();
+					}
+					else
+					{
+						if (!Finfo.fname[0])
+						{
+							send_file();
+							while(send_state!=DONE)
+							{
+								// wait for finish before going to sleep
+							}
+						}
+					}
+					break;
+				}
 			}
 			select_key_pressed = false;
 		}
