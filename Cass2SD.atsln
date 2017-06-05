@@ -16,23 +16,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_debugwire|AVR = Debug_debugwire|AVR
 		Debug|AVR = Debug|AVR
 		default|AVR = default|AVR
 		Release|AVR = Release|AVR
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Debug_debugwire|AVR.ActiveCfg = Debug_debugwire|AVR
+		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Debug_debugwire|AVR.Build.0 = Debug_debugwire|AVR
 		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Debug|AVR.ActiveCfg = Debug|AVR
 		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Debug|AVR.Build.0 = Debug|AVR
 		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.default|AVR.ActiveCfg = Debug|AVR
 		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.default|AVR.Build.0 = Debug|AVR
 		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Release|AVR.ActiveCfg = Release|AVR
 		{09208964-7687-4F1D-BEC3-C421C98BE6B5}.Release|AVR.Build.0 = Release|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug_debugwire|AVR.ActiveCfg = Debug_debugwire|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug_debugwire|AVR.Build.0 = Debug_debugwire|AVR
 		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|AVR.ActiveCfg = Debug|AVR
 		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|AVR.Build.0 = Debug|AVR
 		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.default|AVR.ActiveCfg = Debug|AVR
 		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.default|AVR.Build.0 = Debug|AVR
 		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|AVR.ActiveCfg = Release|AVR
 		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|AVR.Build.0 = Release|AVR
+		{949BC362-9B40-4C14-B382-BD5414A36778}.Debug_debugwire|AVR.ActiveCfg = Debug_debugwire|AVR
+		{949BC362-9B40-4C14-B382-BD5414A36778}.Debug_debugwire|AVR.Build.0 = Debug_debugwire|AVR
 		{949BC362-9B40-4C14-B382-BD5414A36778}.Debug|AVR.ActiveCfg = Debug|AVR
 		{949BC362-9B40-4C14-B382-BD5414A36778}.Debug|AVR.Build.0 = Debug|AVR
 		{949BC362-9B40-4C14-B382-BD5414A36778}.default|AVR.ActiveCfg = Debug|AVR

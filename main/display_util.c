@@ -6,20 +6,34 @@
  */ 
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
+#include <util/delay.h>
+#include <stdbool.h>
 #include "../ff_avr/ff.h"
 #include "../ff_avr/xitoa.h"
 #include "../lcd/lcd.h"
 #include "display_util.h"
+#include "debounced_keys.h"
 
-const prog_char dotdotdir_str[] = ".. [GO UP]";
-const prog_char record_cmd_str[] = "[RECORD HERE]";
-const prog_char dir_str[] = "[DIR]";
-const prog_char empty_dir_str[] = "[Empty Dir]";
-const prog_char pct_s_str[] = "%s";
-const prog_char pct_d_str[] = "%d";
+const char dotdotdir_str[] PROGMEM = ".. [GO UP]";
+const char record_cmd_str[] PROGMEM = "[RECORD HERE]";
+const char dir_str[] PROGMEM = "[DIR]";
+const char empty_dir_str[] PROGMEM = "[Empty Dir]";
+const char pct_s_str[] PROGMEM = "%s";
+const char pct_d_str[] PROGMEM = "%d";
+const char pct_X_str[] PROGMEM = "0x%02X 0x%02X 0x%02X";
 
 char dir_name[DIR_NAME_SIZE]; // 8 char name, 1 char dot, 3 char ext, \0 byte
 int16_t dir_idx = 0;
+
+bool disp_fr_err(FRESULT fr) {
+	if (fr != FR_OK) {
+		put_rc(fr);
+		_delay_ms(ERROR_DISP_MILLIS);
+		return true;
+	}
+	else
+	return false;
+}
 
 void put_rc (FRESULT rc)
 {
@@ -81,3 +95,81 @@ void display_fileinfo(FILINFO* Finfo)
 		}
 	}
 }
+
+void display_sendinfo(char* filename, uint8_t block_len, uint8_t num_blocks, KC_FILE_TYPE file_type)
+{
+	lcd_clrscr();
+	xprintf(PSTR("SND:%s"),filename);
+	lcd_gotoxy(0,1);
+	char* t;
+	switch(file_type)
+	{
+		case BASIC:
+			t="BASIC";
+			break;
+		case MACHINE_CODE:
+			t="MC";
+			break;
+		case TAP:
+			t="TAP";
+			break;
+		case TAP_BASIC:
+			t="TAP_BASIC";
+			break;
+		default:
+			case RAW:
+			t="RAW";
+		break;
+	}
+	xprintf(PSTR("#XXX/%03d%c %s"),num_blocks,block_len==128?'!':' ', t);
+}
+
+void display_upd_sendinfo(uint8_t blocknr)
+{
+	lcd_gotoxy(1,1);
+	xprintf(PSTR("%03d"),blocknr);
+}
+/* Format string is placed in the ROM. The format flags is similar to printf().
+
+   %[flag][width][size]type
+
+   flag
+     A '0' means filled with '0' when output is shorter than width.
+     ' ' is used in default. This is effective only numeral type.
+   width
+     Minimum width in decimal number. This is effective only numeral type.
+     Default width is zero.
+   size
+     A 'l' means the argument is long(32bit). Default is short(16bit).
+     This is effective only numeral type.
+   type
+     'c' : Character, argument is the value
+     's' : String placed on the RAM, argument is the pointer
+     'S' : String placed on the ROM, argument is the pointer
+     'd' : Signed decimal, argument is the value
+     'u' : Unsigned decimal, argument is the value
+     'X' : Hexdecimal, argument is the value
+     'b' : Binary, argument is the value
+     '%' : '%'
+
+*/
+
+void disp_err(char* line1, char* line2) {
+	lcd_clrscr();
+	xprintf(pct_s_str,line1);
+	lcd_gotoxy(0,1);
+	xprintf(pct_s_str,line2);
+	_delay_ms(ERROR_DISP_MILLIS);
+}
+
+#ifdef DEBUG
+void display_debug_and_block(char* line1, uint8_t val1, uint8_t val2, uint8_t val3)
+{
+	lcd_clrscr();
+	xprintf(pct_s_str,line1);
+	lcd_gotoxy(0,1);
+	xprintf(pct_X_str, val1, val2, val3);
+	select_key_pressed = 0;
+	while(!select_key_pressed);
+}
+#endif

@@ -16,6 +16,13 @@
 #define CASS_IN_DDR DDRD
 #define CASS_IN_PIN PORTD2 //Pin 4 for ATMega328P
 
+#ifdef DEBUG_TIMER
+#define MONITOR_PORT PORTB
+#define MONITOR_DDR DDRB
+#define MONITOR_PIN PINB
+#define MONITOR_BIT PORTB6 //Pin 9 for ATMega328P
+#endif
+
 typedef enum {DONE=0, FIRST_HALF, SECOND_HALF} SEND_STATE;
 extern volatile SEND_STATE send_state;
 

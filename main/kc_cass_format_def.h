@@ -13,7 +13,7 @@
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
 
-const prog_char tap_header_str[] = "\xc3KC-TAPE by AF. ";
+extern const prog_char tap_header_str[];
 #define TAP_HEADER_LEN 16
 
 typedef struct{
@@ -38,5 +38,19 @@ typedef struct
 	uint16_t adr1;
 	uint16_t adr2;
 } KC_FCB_BASIC;
+
+
+typedef enum
+{
+	BASIC,
+	MACHINE_CODE,
+	RAW,
+	TAP,
+	TAP_BASIC
+} KC_FILE_TYPE;
+
+#define VORTON_BEGIN 6000
+#define VORTON_BLOCK 160
+#define VORTON_FFBLOCK 5296
 
 #endif /* KC_CASS_FORMAT_DEF_H_ */

@@ -211,13 +211,14 @@ int main(void)
 					}
 					else
 					{
-						if (!Finfo.fname[0])
+						if (Finfo.fname[0])
 						{
 							send_file(&Finfo);
 							while(send_state!=DONE)
 							{
 								// wait for finish before going to sleep
 							}
+							display_fileinfo(&Finfo);
 						}
 					}
 					break;
