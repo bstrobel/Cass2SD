@@ -13,7 +13,7 @@
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
 
-extern const prog_char tap_header_str[];
+extern const char tap_header_str[] PROGMEM;
 #define TAP_HEADER_LEN 16
 
 typedef struct{

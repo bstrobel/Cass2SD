@@ -27,7 +27,7 @@ int16_t dir_idx = 0;
 
 bool disp_fr_err(FRESULT fr) {
 	if (fr != FR_OK) {
-		put_rc(fr);
+		display_fresult(fr);
 		_delay_ms(ERROR_DISP_MILLIS);
 		return true;
 	}
@@ -35,10 +35,10 @@ bool disp_fr_err(FRESULT fr) {
 	return false;
 }
 
-void put_rc (FRESULT rc)
+void display_fresult (FRESULT rc)
 {
-	const prog_char *p;
-	static const prog_char str[] =
+	PGM_P p;
+	static const char str[] PROGMEM =
 	"OK\0DISK_ERR\0INT_ERR\0NOT_READY\0NO_FILE\0NO_PATH\0INVALID_NAME\0"
 	"DENIED\0EXIST\0INVALID_OBJECT\0WRITE_PROTECTED\0INVALID_DRIVE\0"
 	"NOT_ENABLED\0NO_FILE_SYSTEM\0MKFS_ABORTED\0TIMEOUT\0LOCKED\0"

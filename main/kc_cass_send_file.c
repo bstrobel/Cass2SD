@@ -11,11 +11,9 @@
 #include "../ff_avr/diskio.h"
 #include "../lcd/lcd.h"
 
-#include "kc_cass_interface.h"
+#include "kc_cass_send_file.h"
 #include "kc_cass_format_def.h"
 #include "display_util.h"
-
-const prog_char tap_header_str[] = "\xc3KC-TAPE by AF. ";
 
 typedef enum {SPACE=0, ONE, ZERO} BIT_TYPE;
 
@@ -31,9 +29,6 @@ FRESULT fr;
 #define OCR_SPACE_SENDFILE (F_CPU / 64 / 571 / 2 - 1) //108
 #define OCR_BIT_ONE_SENDFILE (F_CPU / 64 / 1087 / 2 - 1) //56
 #define OCR_BIT_ZERO_SENDFILE (F_CPU / 64 / 2000 / 2 - 1) //30
-//#define OCR_SPACE_SENDFILE (F_CPU / 64 / 500 / 2 - 1) //108
-//#define OCR_BIT_ONE_SENDFILE (F_CPU / 64 / 1000 / 2 - 1) //56
-//#define OCR_BIT_ZERO_SENDFILE (F_CPU / 64 / 2000 / 2 - 1) //30
 
 static void config_and_start_timer_sendfile(uint8_t ocr_val) {
 	OCR0A = ocr_val;
@@ -69,18 +64,9 @@ ISR(TIMER0_COMPA_vect) {
 	#endif
 }
 
-ISR(INT0_vect) {
-
-}
-
-void kc_cass_interface_init() {
+void kc_cass_send_file_init() {
 	CASS_OUT_DDR |= _BV(CASS_OUT_PIN); // Configure output pin as OUTPUT
 	CASS_OUT_PORT &= ~(_BV(CASS_OUT_PIN)); // Initialize output pin to LOW
-
-	CASS_IN_DDR &= ~_BV(CASS_IN_PIN); // Configure input pin as INPUT
-	CASS_IN_PORT &= ~_BV(CASS_IN_PIN); // Disable pullup
-	EIMSK &= ~_BV(INT0); // make sure INT0 pin interrupts are disabled
-	EICRA = _BV(ISC00); // any change in logical level on pin will generate int
 
 	#ifdef DEBUG_TIMER
 	MONITOR_DDR |= _BV(MONITOR_BIT);
@@ -434,10 +420,4 @@ void send_file(FILINFO* Finfo) {
 		}
 		f_close(&fhdl);
 	}
-
-}
-
-void record_file(FILINFO* Finfo) {
-	EIFR &= _BV(INT0); // clear int flag reg
-	EIMSK |= _BV(INT0); // enable int INT0
 }

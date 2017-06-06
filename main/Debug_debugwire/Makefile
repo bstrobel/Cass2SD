@@ -39,7 +39,9 @@ SUBDIRS :=
 C_SRCS +=  \
 ../debounced_keys.c \
 ../display_util.c \
-../kc_cass_interface.c \
+../kc_cass_format_def.c \
+../kc_cass_recv_file.c \
+../kc_cass_send_file.c \
 ../main.c
 
 
@@ -52,25 +54,33 @@ ASM_SRCS +=
 OBJS +=  \
 debounced_keys.o \
 display_util.o \
-kc_cass_interface.o \
+kc_cass_format_def.o \
+kc_cass_recv_file.o \
+kc_cass_send_file.o \
 main.o
 
 OBJS_AS_ARGS +=  \
 debounced_keys.o \
 display_util.o \
-kc_cass_interface.o \
+kc_cass_format_def.o \
+kc_cass_recv_file.o \
+kc_cass_send_file.o \
 main.o
 
 C_DEPS +=  \
 debounced_keys.d \
 display_util.d \
-kc_cass_interface.d \
+kc_cass_format_def.d \
+kc_cass_recv_file.d \
+kc_cass_send_file.d \
 main.d
 
 C_DEPS_AS_ARGS +=  \
 debounced_keys.d \
 display_util.d \
-kc_cass_interface.d \
+kc_cass_format_def.d \
+kc_cass_recv_file.d \
+kc_cass_send_file.d \
 main.d
 
 OUTPUT_FILE_PATH +=main.elf
@@ -89,6 +99,10 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 

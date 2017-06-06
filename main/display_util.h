@@ -25,7 +25,7 @@ extern int16_t dir_idx;
 void display_fileinfo(FILINFO*);
 void display_sendinfo(char* filename, uint8_t block_len, uint8_t num_blocks, KC_FILE_TYPE file_type);
 void display_upd_sendinfo(uint8_t blocknr);
-void put_rc (FRESULT);
+void display_fresult (FRESULT);
 void disp_err(char* line1, char* line2);
 bool disp_fr_err(FRESULT);
 #ifdef DEBUG
