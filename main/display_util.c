@@ -104,22 +104,28 @@ void display_sendinfo(char* filename, uint8_t block_len, uint8_t num_blocks, KC_
 	char* t;
 	switch(file_type)
 	{
-		case BASIC:
-			t="BASIC";
+		case BASIC_NO_HEADER:
+			t="B_NOHD";
+			break;
+		case BASIC_W_HEADER:
+			t="B_WHDR";
 			break;
 		case MACHINE_CODE:
 			t="MC";
 			break;
 		case TAP:
-			t="TAP";
+			t="TAP_MC";
 			break;
 		case TAP_BASIC:
-			t="TAP_BASIC";
+			t="TAP_B";
+			break;
+		case TAP_BASIC_EXTRA_BLOCKS:
+			t="TAP_BX";
 			break;
 		default:
-			case RAW:
+		case RAW:
 			t="RAW";
-		break;
+			break;
 	}
 	xprintf(PSTR("#XXX/%03d%c %s"),num_blocks,block_len==128?'!':' ', t);
 }

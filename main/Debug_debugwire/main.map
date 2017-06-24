@@ -11,7 +11,7 @@ C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire
 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
                               display_util.o (lcd_gotoxy)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_udivmodsi4.o)
-                              C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o) (__udivmodsi4)
+                              kc_cass_send_file.o (__udivmodsi4)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
                               C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o (exit)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_tablejump2.o)
@@ -24,8 +24,6 @@ c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/..
                               C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o) (__umulhisi3)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_muluhisi3.o)
                               C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o) (__muluhisi3)
-c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strcmp_P.o)
-                              kc_cass_send_file.o (strcmp_P)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strncmp_P.o)
                               kc_cass_send_file.o (strncmp_P)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(memset.o)
@@ -137,7 +135,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x18 kc_cass_format_def.o
  .debug_macro   0x00000000       0x6c kc_cass_format_def.o
  .debug_macro   0x00000000       0xee kc_cass_format_def.o
- .debug_macro   0x00000000       0x28 kc_cass_format_def.o
+ .debug_macro   0x00000000       0x2e kc_cass_format_def.o
  .group         0x00000000        0x8 kc_cass_recv_file.o
  .group         0x00000000        0x8 kc_cass_recv_file.o
  .group         0x00000000        0x8 kc_cass_recv_file.o
@@ -246,7 +244,7 @@ Discarded input sections
  .debug_macro   0x00000000       0xe2 kc_cass_send_file.o
  .debug_macro   0x00000000       0xd6 kc_cass_send_file.o
  .debug_macro   0x00000000      0x1e3 kc_cass_send_file.o
- .debug_macro   0x00000000       0x28 kc_cass_send_file.o
+ .debug_macro   0x00000000       0x2e kc_cass_send_file.o
  .group         0x00000000        0x8 main.o
  .group         0x00000000        0x8 main.o
  .group         0x00000000        0x8 main.o
@@ -308,7 +306,7 @@ Discarded input sections
  .debug_macro   0x00000000       0xd6 main.o
  .debug_macro   0x00000000      0x1e3 main.o
  .debug_macro   0x00000000       0x46 main.o
- .debug_macro   0x00000000       0x28 main.o
+ .debug_macro   0x00000000       0x2e main.o
  .debug_macro   0x00000000       0x22 main.o
  .debug_macro   0x00000000       0x34 main.o
  .debug_macro   0x00000000       0x1c main.o
@@ -453,9 +451,6 @@ Discarded input sections
                 0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_muluhisi3.o)
  .text.libgcc.fixed
                 0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_muluhisi3.o)
- .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strcmp_P.o)
- .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strcmp_P.o)
- .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strcmp_P.o)
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strncmp_P.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strncmp_P.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strncmp_P.o)
@@ -597,7 +592,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x4fdc
+.text           0x00000000     0x51ec
  *(.vectors)
  .vectors       0x00000000       0x68 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
                 0x00000000                __vector_default
@@ -615,9 +610,9 @@ END GROUP
  *libprintf_flt.a:*(.progmem.data)
  *libc.a:*(.progmem.data)
  *(.progmem*)
- .progmem.data.__c.2263
+ .progmem.data.__c.2265
                 0x000000dc        0x5 display_util.o
- .progmem.data.__c.2258
+ .progmem.data.__c.2260
                 0x000000e1        0xf display_util.o
  .progmem.data.__c.2248
                 0x000000f0        0x7 display_util.o
@@ -648,42 +643,40 @@ END GROUP
  .progmem.data.tap_header_str
                 0x00000205       0x11 kc_cass_format_def.o
                 0x00000205                tap_header_str
- .progmem.data.__c.2431
-                0x00000216        0x4 kc_cass_send_file.o
- .progmem.data.__c.2460
-                0x0000021a        0xe kc_cass_send_file.o
- .progmem.data.__c.2458
-                0x00000228        0x7 kc_cass_send_file.o
-                0x00000230                . = ALIGN (0x2)
- *fill*         0x0000022f        0x1 
+ .progmem.data.__c.2469
+                0x00000216        0xe kc_cass_send_file.o
+ .progmem.data.__c.2467
+                0x00000224        0x7 kc_cass_send_file.o
+                0x0000022c                . = ALIGN (0x2)
+ *fill*         0x0000022b        0x1 
  *(.jumptables)
  *(.jumptables*)
  *(.lowtext)
  *(.lowtext*)
-                0x00000230                __ctors_start = .
+                0x0000022c                __ctors_start = .
  *(.ctors)
-                0x00000230                __ctors_end = .
-                0x00000230                __dtors_start = .
+                0x0000022c                __ctors_end = .
+                0x0000022c                __dtors_start = .
  *(.dtors)
-                0x00000230                __dtors_end = .
+                0x0000022c                __dtors_end = .
  SORT(*)(.ctors)
  SORT(*)(.dtors)
  *(.init0)
- .init0         0x00000230        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
-                0x00000230                __init
+ .init0         0x0000022c        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
+                0x0000022c                __init
  *(.init0)
  *(.init1)
  *(.init1)
  *(.init2)
- .init2         0x00000230        0xc C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
+ .init2         0x0000022c        0xc C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
  *(.init2)
  *(.init3)
  *(.init3)
  *(.init4)
- .init4         0x0000023c       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_copy_data.o)
-                0x0000023c                __do_copy_data
- .init4         0x00000252       0x10 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_clear_bss.o)
-                0x00000252                __do_clear_bss
+ .init4         0x00000238       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_copy_data.o)
+                0x00000238                __do_copy_data
+ .init4         0x0000024e       0x10 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_clear_bss.o)
+                0x0000024e                __do_clear_bss
  *(.init4)
  *(.init5)
  *(.init5)
@@ -694,291 +687,292 @@ END GROUP
  *(.init8)
  *(.init8)
  *(.init9)
- .init9         0x00000262        0x8 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
+ .init9         0x0000025e        0x8 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
  *(.init9)
  *(.text)
- .text          0x0000026a        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
-                0x0000026a                __vector_22
-                0x0000026a                __vector_24
-                0x0000026a                __vector_12
-                0x0000026a                __bad_interrupt
-                0x0000026a                __vector_6
-                0x0000026a                __vector_3
-                0x0000026a                __vector_23
-                0x0000026a                __vector_25
-                0x0000026a                __vector_11
-                0x0000026a                __vector_13
-                0x0000026a                __vector_17
-                0x0000026a                __vector_19
-                0x0000026a                __vector_5
-                0x0000026a                __vector_4
-                0x0000026a                __vector_9
-                0x0000026a                __vector_2
-                0x0000026a                __vector_21
-                0x0000026a                __vector_15
-                0x0000026a                __vector_8
-                0x0000026a                __vector_10
-                0x0000026a                __vector_16
-                0x0000026a                __vector_18
-                0x0000026a                __vector_20
- .text          0x0000026c      0x26a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
-                0x0000026c                xputc
-                0x0000028e                xputs
-                0x0000029c                xitoa
-                0x000003c0                xprintf
-                0x000003da                xsprintf
-                0x00000420                xatoi
-                0x000004d6                . = ALIGN (0x2)
+ .text          0x00000266        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
+                0x00000266                __vector_22
+                0x00000266                __vector_24
+                0x00000266                __vector_12
+                0x00000266                __bad_interrupt
+                0x00000266                __vector_6
+                0x00000266                __vector_3
+                0x00000266                __vector_23
+                0x00000266                __vector_25
+                0x00000266                __vector_11
+                0x00000266                __vector_13
+                0x00000266                __vector_17
+                0x00000266                __vector_19
+                0x00000266                __vector_5
+                0x00000266                __vector_4
+                0x00000266                __vector_9
+                0x00000266                __vector_2
+                0x00000266                __vector_21
+                0x00000266                __vector_15
+                0x00000266                __vector_8
+                0x00000266                __vector_10
+                0x00000266                __vector_16
+                0x00000266                __vector_18
+                0x00000266                __vector_20
+ .text          0x00000268      0x26a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
+                0x00000268                xputc
+                0x0000028a                xputs
+                0x00000298                xitoa
+                0x000003bc                xprintf
+                0x000003d6                xsprintf
+                0x0000041c                xatoi
+                0x000004d2                . = ALIGN (0x2)
  *(.text.*)
  .text.keys_init
-                0x000004d6       0xe2 debounced_keys.o
-                0x000004d6                keys_init
+                0x000004d2       0xe2 debounced_keys.o
+                0x000004d2                keys_init
  .text.handle_keys
-                0x000005b8      0x158 debounced_keys.o
-                0x000005b8                handle_keys
+                0x000005b4      0x158 debounced_keys.o
+                0x000005b4                handle_keys
  .text.display_fresult
-                0x00000710       0x76 display_util.o
-                0x00000710                display_fresult
+                0x0000070c       0x76 display_util.o
+                0x0000070c                display_fresult
  .text.disp_fr_err
-                0x00000786       0x20 display_util.o
-                0x00000786                disp_fr_err
+                0x00000782       0x20 display_util.o
+                0x00000782                disp_fr_err
  .text.display_fileinfo
-                0x000007a6      0x100 display_util.o
-                0x000007a6                display_fileinfo
+                0x000007a2      0x100 display_util.o
+                0x000007a2                display_fileinfo
  .text.display_sendinfo
-                0x000008a6       0xaa display_util.o
-                0x000008a6                display_sendinfo
+                0x000008a2       0xc6 display_util.o
+                0x000008a2                display_sendinfo
  .text.display_upd_sendinfo
-                0x00000950       0x26 display_util.o
-                0x00000950                display_upd_sendinfo
+                0x00000968       0x26 display_util.o
+                0x00000968                display_upd_sendinfo
  .text.disp_err
-                0x00000976       0x60 display_util.o
-                0x00000976                disp_err
+                0x0000098e       0x60 display_util.o
+                0x0000098e                disp_err
  .text.__vector_1
-                0x000009d6       0x14 kc_cass_recv_file.o
-                0x000009d6                __vector_1
+                0x000009ee       0x14 kc_cass_recv_file.o
+                0x000009ee                __vector_1
  .text.kc_cass_recv_file_init
-                0x000009ea       0x1a kc_cass_recv_file.o
-                0x000009ea                kc_cass_recv_file_init
+                0x00000a02       0x1a kc_cass_recv_file.o
+                0x00000a02                kc_cass_recv_file_init
  .text.recv_file
-                0x00000a04        0xe kc_cass_recv_file.o
-                0x00000a04                recv_file
+                0x00000a1c        0xe kc_cass_recv_file.o
+                0x00000a1c                recv_file
  .text.config_and_start_timer_sendfile
-                0x00000a12       0x14 kc_cass_send_file.o
+                0x00000a2a       0x14 kc_cass_send_file.o
  .text.send_bit
-                0x00000a26       0x52 kc_cass_send_file.o
+                0x00000a3e       0x52 kc_cass_send_file.o
  .text.send_byte
-                0x00000a78       0x44 kc_cass_send_file.o
- .text.check_for_blocknrs
-                0x00000abc       0x92 kc_cass_send_file.o
+                0x00000a90       0x44 kc_cass_send_file.o
+ .text.check_basic_fcb
+                0x00000ad4       0x2a kc_cass_send_file.o
+ .text.detect_block_len
+                0x00000afe       0x92 kc_cass_send_file.o
+ .text.check_tap_types
+                0x00000b90      0x142 kc_cass_send_file.o
  .text.check_non_tap_types
-                0x00000b4e      0x28e kc_cass_send_file.o
+                0x00000cd2      0x3ac kc_cass_send_file.o
  .text.load_first_block_and_check_type
-                0x00000ddc      0x1c4 kc_cass_send_file.o
+                0x0000107e      0x102 kc_cass_send_file.o
  .text.__vector_14
-                0x00000fa0       0x62 kc_cass_send_file.o
-                0x00000fa0                __vector_14
+                0x00001180       0x62 kc_cass_send_file.o
+                0x00001180                __vector_14
  .text.kc_cass_send_file_init
-                0x00001002       0x1a kc_cass_send_file.o
-                0x00001002                kc_cass_send_file_init
+                0x000011e2       0x1a kc_cass_send_file.o
+                0x000011e2                kc_cass_send_file_init
  .text.send_file
-                0x0000101c      0x19e kc_cass_send_file.o
-                0x0000101c                send_file
+                0x000011fc      0x1de kc_cass_send_file.o
+                0x000011fc                send_file
  .text.disk_and_debounce_timer_init
-                0x000011ba       0x18 main.o
+                0x000013da       0x18 main.o
  .text.power_save_config
-                0x000011d2       0x3c main.o
+                0x000013f2       0x3c main.o
  .text.display_prev
-                0x0000120e       0x6a main.o
+                0x0000142e       0x6a main.o
  .text.display_next
-                0x00001278       0x56 main.o
+                0x00001498       0x56 main.o
  .text.__vector_7
-                0x000012ce       0xc4 main.o
-                0x000012ce                __vector_7
- .text.main     0x00001392      0x138 main.o
-                0x00001392                main
+                0x000014ee       0xc4 main.o
+                0x000014ee                __vector_7
+ .text.main     0x000015b2      0x13a main.o
+                0x000015b2                main
  .text.disk_status
-                0x000014ca        0xe C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
-                0x000014ca                disk_status
+                0x000016ec        0xe C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+                0x000016ec                disk_status
  .text.disk_initialize
-                0x000014d8        0xe C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
-                0x000014d8                disk_initialize
+                0x000016fa        0xe C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+                0x000016fa                disk_initialize
  .text.disk_read
-                0x000014e6       0x22 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
-                0x000014e6                disk_read
+                0x00001708       0x22 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+                0x00001708                disk_read
  .text.disk_write
-                0x00001508       0x22 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
-                0x00001508                disk_write
+                0x0000172a       0x22 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+                0x0000172a                disk_write
  .text.disk_ioctl
-                0x0000152a       0x14 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
-                0x0000152a                disk_ioctl
+                0x0000174c       0x14 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+                0x0000174c                disk_ioctl
  .text.disk_timerproc
-                0x0000153e        0x6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
-                0x0000153e                disk_timerproc
- .text.ld_word  0x00001544       0x14 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001760        0x6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+                0x00001760                disk_timerproc
+ .text.ld_word  0x00001766       0x14 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.ld_dword
-                0x00001558       0x36 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.st_word  0x0000158e        0x8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x0000177a       0x36 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.st_word  0x000017b0        0x8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.st_dword
-                0x00001596        0xc C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.mem_cpy  0x000015a2       0x1e C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.mem_set  0x000015c0       0x12 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.mem_cmp  0x000015d2       0x30 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.chk_chr  0x00001602       0x22 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000017b8        0xc C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.mem_cpy  0x000017c4       0x1e C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.mem_set  0x000017e2       0x12 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.mem_cmp  0x000017f4       0x30 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.chk_chr  0x00001824       0x22 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.clust2sect
-                0x00001624       0x50 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001846       0x50 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.ld_clust
-                0x00001674       0x56 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001896       0x56 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.st_clust
-                0x000016ca       0x46 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000018ec       0x46 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.get_fileinfo
-                0x00001710       0xac C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001932       0xac C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.create_name
-                0x000017bc      0x1c8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000019de      0x1c8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.get_ldnumber
-                0x00001984       0x6e C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001ba6       0x6e C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.validate
-                0x000019f2       0x58 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001c14       0x58 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.sync_window
-                0x00001a4a       0xd0 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001c6c       0xd0 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.move_window
-                0x00001b1a       0x80 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001d3c       0x80 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.check_fs
-                0x00001b9a       0x86 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001dbc       0x86 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.find_volume
-                0x00001c20      0x594 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.put_fat  0x000021b4      0x252 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.get_fat  0x00002406      0x1c0 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.dir_sdi  0x000025c6      0x1da C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00001e42      0x594 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.put_fat  0x000023d6      0x252 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.get_fat  0x00002628      0x1c0 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.dir_sdi  0x000027e8      0x1da C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.create_chain
-                0x000027a0      0x204 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000029c2      0x204 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.remove_chain
-                0x000029a4      0x136 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00002bc6      0x136 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.dir_next
-                0x00002ada      0x288 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00002cfc      0x288 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.dir_find
-                0x00002d62       0x86 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00002f84       0x86 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.follow_path
-                0x00002de8      0x132 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x0000300a      0x132 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.dir_alloc
-                0x00002f1a       0x80 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x0000313c       0x80 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.dir_register
-                0x00002f9a       0x6a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000031bc       0x6a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .text.dir_read
-                0x00003004       0x96 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.sync_fs  0x0000309a       0xea C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .text.f_mount  0x00003184       0x9a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x00003184                f_mount
- .text.f_open   0x0000321e      0x358 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x0000321e                f_open
- .text.f_read   0x00003576      0x2f2 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x00003576                f_read
- .text.f_sync   0x00003868       0xb6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x00003868                f_sync
- .text.f_close  0x0000391e       0x3a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x0000391e                f_close
- .text.f_chdir  0x00003958       0xb4 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x00003958                f_chdir
+                0x00003226       0x96 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.sync_fs  0x000032bc       0xea C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .text.f_mount  0x000033a6       0x9a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000033a6                f_mount
+ .text.f_open   0x00003440      0x358 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00003440                f_open
+ .text.f_read   0x00003798      0x2f2 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00003798                f_read
+ .text.f_sync   0x00003a8a       0xb6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00003a8a                f_sync
+ .text.f_close  0x00003b40       0x3a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00003b40                f_close
+ .text.f_chdir  0x00003b7a       0xb4 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00003b7a                f_chdir
  .text.f_getcwd
-                0x00003a0c      0x20a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x00003a0c                f_getcwd
- .text.f_lseek  0x00003c16      0x394 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x00003c16                f_lseek
+                0x00003c2e      0x20a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00003c2e                f_getcwd
+ .text.f_lseek  0x00003e38      0x394 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00003e38                f_lseek
  .text.f_opendir
-                0x00003faa       0xd8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x00003faa                f_opendir
+                0x000041cc       0xd8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000041cc                f_opendir
  .text.f_closedir
-                0x00004082       0x32 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x00004082                f_closedir
+                0x000042a4       0x32 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000042a4                f_closedir
  .text.f_readdir
-                0x000040b4       0x8a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
-                0x000040b4                f_readdir
+                0x000042d6       0x8a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000042d6                f_readdir
  .text.xchg_spi
-                0x0000413e        0xc C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x00004360        0xc C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  .text.rcvr_spi_multi
-                0x0000414a       0x30 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x0000436c       0x30 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  .text.xmit_spi_multi
-                0x0000417a       0x28 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x0000439c       0x28 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  .text.wait_ready
-                0x000041a2       0x36 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x000043c4       0x36 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  .text.deselect
-                0x000041d8        0xc C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
- .text.select   0x000041e4       0x2a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x000043fa        0xc C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .text.select   0x00004406       0x2a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  .text.rcvr_datablock
-                0x0000420e       0x48 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x00004430       0x48 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  .text.xmit_datablock
-                0x00004256       0x4c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x00004478       0x4c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  .text.send_cmd
-                0x000042a2       0x82 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x000044c4       0x82 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  .text.mmc_disk_initialize
-                0x00004324      0x1aa C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
-                0x00004324                mmc_disk_initialize
+                0x00004546      0x1aa C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x00004546                mmc_disk_initialize
  .text.mmc_disk_status
-                0x000044ce        0x6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
-                0x000044ce                mmc_disk_status
+                0x000046f0        0x6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x000046f0                mmc_disk_status
  .text.mmc_disk_read
-                0x000044d4       0x9a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
-                0x000044d4                mmc_disk_read
+                0x000046f6       0x9a C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x000046f6                mmc_disk_read
  .text.mmc_disk_write
-                0x0000456e       0xd8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
-                0x0000456e                mmc_disk_write
+                0x00004790       0xd8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x00004790                mmc_disk_write
  .text.mmc_disk_ioctl
-                0x00004646      0x702 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
-                0x00004646                mmc_disk_ioctl
+                0x00004868      0x702 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x00004868                mmc_disk_ioctl
  .text.mmc_disk_timerproc
-                0x00004d48       0x28 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
-                0x00004d48                mmc_disk_timerproc
+                0x00004f6a       0x28 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x00004f6a                mmc_disk_timerproc
  .text.toggle_e
-                0x00004d70       0x16 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x00004f92       0x16 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
  .text.lcd_write
-                0x00004d86       0x46 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x00004fa8       0x46 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
  .text.lcd_read
-                0x00004dcc       0x5c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x00004fee       0x5c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
  .text.lcd_waitbusy
-                0x00004e28       0x16 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x0000504a       0x16 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
  .text.lcd_command
-                0x00004e3e       0x10 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
-                0x00004e3e                lcd_command
+                0x00005060       0x10 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x00005060                lcd_command
  .text.lcd_gotoxy
-                0x00004e4e       0x10 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
-                0x00004e4e                lcd_gotoxy
+                0x00005070       0x10 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x00005070                lcd_gotoxy
  .text.lcd_clrscr
-                0x00004e5e        0x6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
-                0x00004e5e                lcd_clrscr
+                0x00005080        0x6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x00005080                lcd_clrscr
  .text.lcd_putc
-                0x00004e64       0x24 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
-                0x00004e64                lcd_putc
+                0x00005086       0x24 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x00005086                lcd_putc
  .text.lcd_init
-                0x00004e88       0x7c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
-                0x00004e88                lcd_init
+                0x000050aa       0x7c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x000050aa                lcd_init
  .text.libgcc.div
-                0x00004f04       0x44 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_udivmodsi4.o)
-                0x00004f04                __udivmodsi4
- .text.libgcc   0x00004f48        0xc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_tablejump2.o)
-                0x00004f48                __tablejump2__
+                0x00005126       0x44 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_udivmodsi4.o)
+                0x00005126                __udivmodsi4
+ .text.libgcc   0x0000516a        0xc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_tablejump2.o)
+                0x0000516a                __tablejump2__
  .text.libgcc.mul
-                0x00004f54       0x1e c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_umulhisi3.o)
-                0x00004f54                __umulhisi3
+                0x00005176       0x1e c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_umulhisi3.o)
+                0x00005176                __umulhisi3
  .text.libgcc.mul
-                0x00004f72       0x14 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_muluhisi3.o)
-                0x00004f72                __muluhisi3
+                0x00005194       0x14 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_muluhisi3.o)
+                0x00005194                __muluhisi3
  .text.avr-libc
-                0x00004f86       0x12 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strcmp_P.o)
-                0x00004f86                strcmp_P
+                0x000051a8       0x1c c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strncmp_P.o)
+                0x000051a8                strncmp_P
  .text.avr-libc
-                0x00004f98       0x1c c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strncmp_P.o)
-                0x00004f98                strncmp_P
+                0x000051c4        0xe c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(memset.o)
+                0x000051c4                memset
  .text.avr-libc
-                0x00004fb4        0xe c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(memset.o)
-                0x00004fb4                memset
- .text.avr-libc
-                0x00004fc2       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strchr.o)
-                0x00004fc2                strchr
-                0x00004fd8                . = ALIGN (0x2)
+                0x000051d2       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strchr.o)
+                0x000051d2                strchr
+                0x000051e8                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00004fd8        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x00004fd8                _exit
-                0x00004fd8                exit
+ .fini9         0x000051e8        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x000051e8                _exit
+                0x000051e8                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -997,11 +991,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00004fd8        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x000051e8        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00004fdc                _etext = .
+                0x000051ec                _etext = .
 
-.data           0x00800100       0x4a load address 0x00004fdc
+.data           0x00800100       0x70 load address 0x000051ec
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -1021,71 +1015,74 @@ END GROUP
  *(.rodata)
  *(.rodata*)
  .rodata.str1.1
-                0x0080010c       0x15 display_util.o
-                                 0x1b (size before relaxing)
+                0x0080010c       0x26 display_util.o
+                                 0x29 (size before relaxing)
  .rodata.str1.1
-                0x00800121       0x16 kc_cass_send_file.o
+                0x00800132       0x2b kc_cass_send_file.o
  .rodata.str1.1
-                0x00800137        0x3 main.o
+                0x0080015d        0x3 main.o
                                   0x6 (size before relaxing)
  .rodata.str1.1
-                0x0080013a        0xf C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x00800160        0xf C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  *(.gnu.linkonce.d*)
-                0x0080014a                . = ALIGN (0x2)
- *fill*         0x00800149        0x1 
-                0x0080014a                _edata = .
-                0x0080014a                PROVIDE (__data_end, .)
+                0x00800170                . = ALIGN (0x2)
+ *fill*         0x0080016f        0x1 
+                0x00800170                _edata = .
+                0x00800170                PROVIDE (__data_end, .)
 
-.bss            0x0080014a      0x33c
-                0x0080014a                PROVIDE (__bss_start, .)
+.bss            0x00800170      0x33d
+                0x00800170                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x0080014a        0x2 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
-                0x0080014a                xfunc_out
+ .bss           0x00800170        0x2 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
+                0x00800170                xfunc_out
  *(.bss*)
  .bss.keys_debounce_last_state_bitmap
-                0x0080014c        0x1 debounced_keys.o
+                0x00800172        0x1 debounced_keys.o
  .bss.debounce_counter
-                0x0080014d        0x3 debounced_keys.o
+                0x00800173        0x3 debounced_keys.o
  .bss.display_task
-                0x00800150        0x2 debounced_keys.o
-                0x00800150                display_task
- .bss.dir_idx   0x00800152        0x2 display_util.o
-                0x00800152                dir_idx
+                0x00800176        0x2 debounced_keys.o
+                0x00800176                display_task
+ .bss.dir_idx   0x00800178        0x2 display_util.o
+                0x00800178                dir_idx
+ .bss.number_of_blocks
+                0x0080017a        0x1 kc_cass_send_file.o
+                0x0080017a                number_of_blocks
  .bss.bytes_read
-                0x00800154        0x2 kc_cass_send_file.o
-                0x00800154                bytes_read
+                0x0080017b        0x2 kc_cass_send_file.o
+                0x0080017b                bytes_read
  .bss.send_state
-                0x00800156        0x2 kc_cass_send_file.o
-                0x00800156                send_state
- .bss.Fsid      0x00800158        0x2 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .bss.FatFs     0x0080015a        0x2 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .bss.CardType  0x0080015c        0x1 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
- .bss.Timer2    0x0080015d        0x1 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
- .bss.Timer1    0x0080015e        0x1 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x0080017d        0x2 kc_cass_send_file.o
+                0x0080017d                send_state
+ .bss.Fsid      0x0080017f        0x2 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .bss.FatFs     0x00800181        0x2 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .bss.CardType  0x00800183        0x1 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .bss.Timer2    0x00800184        0x1 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .bss.Timer1    0x00800185        0x1 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  *(COMMON)
- COMMON         0x0080015f        0x3 debounced_keys.o
-                0x0080015f                keys_changed_bitmap
-                0x00800160                select_key_pressed
-                0x00800161                keys_bitmap
- COMMON         0x00800162        0xd display_util.o
-                0x00800162                dir_name
- COMMON         0x0080016f       0xa6 kc_cass_send_file.o
-                0x0080016f                fhdl
-                0x00800191                fr
-                0x00800193                buf
- COMMON         0x00800215      0x271 main.o
-                0x00800215                FatFs
-                0x00800448                Finfo
-                0x0080045e                Dir
-                0x00800486                PROVIDE (__bss_end, .)
-                0x00004fdc                __data_load_start = LOADADDR (.data)
-                0x00005026                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00800186        0x3 debounced_keys.o
+                0x00800186                keys_changed_bitmap
+                0x00800187                select_key_pressed
+                0x00800188                keys_bitmap
+ COMMON         0x00800189        0xd display_util.o
+                0x00800189                dir_name
+ COMMON         0x00800196       0xa6 kc_cass_send_file.o
+                0x00800196                fhdl
+                0x008001b8                fr
+                0x008001ba                buf
+ COMMON         0x0080023c      0x271 main.o
+                0x0080023c                FatFs
+                0x0080046f                Finfo
+                0x00800485                Dir
+                0x008004ad                PROVIDE (__bss_end, .)
+                0x000051ec                __data_load_start = LOADADDR (.data)
+                0x0000525c                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800486        0x0
+.noinit         0x008004ad        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x00800486                _end = .
+                0x008004ad                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
@@ -1159,7 +1156,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x490
+.debug_aranges  0x00000000      0x4a0
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x28 debounced_keys.o
@@ -1170,115 +1167,115 @@ END GROUP
  .debug_aranges
                 0x00000090       0x30 kc_cass_recv_file.o
  .debug_aranges
-                0x000000c0       0x60 kc_cass_send_file.o
+                0x000000c0       0x70 kc_cass_send_file.o
  .debug_aranges
-                0x00000120       0x48 main.o
+                0x00000130       0x48 main.o
  .debug_aranges
-                0x00000168       0x48 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+                0x00000178       0x48 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
  .debug_aranges
-                0x000001b0      0x1a8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+                0x000001c0      0x1a8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
  .debug_aranges
-                0x00000358       0x90 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+                0x00000368       0x90 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
  .debug_aranges
-                0x000003e8       0x20 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
+                0x000003f8       0x20 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
  .debug_aranges
-                0x00000408       0x88 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+                0x00000418       0x88 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x7ba5
+.debug_info     0x00000000     0x7d59
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x5f4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_info    0x000005f4      0x205 debounced_keys.o
- .debug_info    0x000007f9      0x846 display_util.o
- .debug_info    0x0000103f       0xa2 kc_cass_format_def.o
- .debug_info    0x000010e1      0x198 kc_cass_recv_file.o
- .debug_info    0x00001279      0xebe kc_cass_send_file.o
- .debug_info    0x00002137      0x9d7 main.o
- .debug_info    0x00002b0e      0x33c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
- .debug_info    0x00002e4a     0x3674 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .debug_info    0x000064be      0xed6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
- .debug_info    0x00007394       0x84 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
- .debug_info    0x00007418      0x78d C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+ .debug_info    0x000007f9      0x852 display_util.o
+ .debug_info    0x0000104b       0xa2 kc_cass_format_def.o
+ .debug_info    0x000010ed      0x198 kc_cass_recv_file.o
+ .debug_info    0x00001285     0x1066 kc_cass_send_file.o
+ .debug_info    0x000022eb      0x9d7 main.o
+ .debug_info    0x00002cc2      0x33c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+ .debug_info    0x00002ffe     0x3674 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .debug_info    0x00006672      0xed6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .debug_info    0x00007548       0x84 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
+ .debug_info    0x000075cc      0x78d C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
 
-.debug_abbrev   0x00000000     0x16fb
+.debug_abbrev   0x00000000     0x173a
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x5a2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_abbrev  0x000005a2       0xf3 debounced_keys.o
  .debug_abbrev  0x00000695      0x218 display_util.o
  .debug_abbrev  0x000008ad       0x53 kc_cass_format_def.o
  .debug_abbrev  0x00000900       0xcc kc_cass_recv_file.o
- .debug_abbrev  0x000009cc      0x330 kc_cass_send_file.o
- .debug_abbrev  0x00000cfc      0x265 main.o
- .debug_abbrev  0x00000f61      0x10c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
- .debug_abbrev  0x0000106d      0x204 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .debug_abbrev  0x00001271      0x218 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
- .debug_abbrev  0x00001489       0x14 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
- .debug_abbrev  0x0000149d      0x25e C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+ .debug_abbrev  0x000009cc      0x36f kc_cass_send_file.o
+ .debug_abbrev  0x00000d3b      0x265 main.o
+ .debug_abbrev  0x00000fa0      0x10c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+ .debug_abbrev  0x000010ac      0x204 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .debug_abbrev  0x000012b0      0x218 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .debug_abbrev  0x000014c8       0x14 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
+ .debug_abbrev  0x000014dc      0x25e C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
 
-.debug_line     0x00000000     0x5896
+.debug_line     0x00000000     0x59a8
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x133 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_line    0x00000133      0x37b debounced_keys.o
- .debug_line    0x000004ae      0x58a display_util.o
- .debug_line    0x00000a38      0x254 kc_cass_format_def.o
- .debug_line    0x00000c8c      0x3b1 kc_cass_recv_file.o
- .debug_line    0x0000103d      0x9c6 kc_cass_send_file.o
- .debug_line    0x00001a03      0x670 main.o
- .debug_line    0x00002073      0x133 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
- .debug_line    0x000021a6     0x21b0 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .debug_line    0x00004356      0x9e8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
- .debug_line    0x00004d3e      0x742 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
- .debug_line    0x00005480      0x416 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+ .debug_line    0x000004ae      0x5a2 display_util.o
+ .debug_line    0x00000a50      0x254 kc_cass_format_def.o
+ .debug_line    0x00000ca4      0x3b1 kc_cass_recv_file.o
+ .debug_line    0x00001055      0xac0 kc_cass_send_file.o
+ .debug_line    0x00001b15      0x670 main.o
+ .debug_line    0x00002185      0x133 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+ .debug_line    0x000022b8     0x21b0 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .debug_line    0x00004468      0x9e8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .debug_line    0x00004e50      0x742 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(xitoa.o)
+ .debug_line    0x00005592      0x416 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
 
-.debug_frame    0x00000000     0x1438
+.debug_frame    0x00000000     0x144c
  *(.debug_frame)
  .debug_frame   0x00000000       0x34 debounced_keys.o
  .debug_frame   0x00000034      0x1ec display_util.o
  .debug_frame   0x00000220       0x50 kc_cass_recv_file.o
- .debug_frame   0x00000270      0x168 kc_cass_send_file.o
- .debug_frame   0x000003d8       0xc8 main.o
- .debug_frame   0x000004a0       0x8c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
- .debug_frame   0x0000052c      0xbd8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .debug_frame   0x00001104      0x1fc C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
- .debug_frame   0x00001300      0x138 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+ .debug_frame   0x00000270      0x17c kc_cass_send_file.o
+ .debug_frame   0x000003ec       0xc8 main.o
+ .debug_frame   0x000004b4       0x8c C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+ .debug_frame   0x00000540      0xbd8 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .debug_frame   0x00001118      0x1fc C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .debug_frame   0x00001314      0x138 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
 
-.debug_str      0x00000000     0xaa11
+.debug_str      0x00000000     0xaa69
  *(.debug_str)
  .debug_str     0x00000000      0x208 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.132/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_str     0x00000208     0x68df debounced_keys.o
                                0x6990 (size before relaxing)
- .debug_str     0x00006ae7     0x254f display_util.o
-                               0x8e63 (size before relaxing)
- .debug_str     0x00009036       0x29 kc_cass_format_def.o
-                               0x7b23 (size before relaxing)
- .debug_str     0x0000905f      0x7a3 kc_cass_recv_file.o
+ .debug_str     0x00006ae7     0x258f display_util.o
+                               0x8ea7 (size before relaxing)
+ .debug_str     0x00009076       0x29 kc_cass_format_def.o
+                               0x7b37 (size before relaxing)
+ .debug_str     0x0000909f      0x7a3 kc_cass_recv_file.o
                                0x90df (size before relaxing)
- .debug_str     0x00009802      0x417 kc_cass_send_file.o
-                               0x976f (size before relaxing)
- .debug_str     0x00009c19      0x814 main.o
-                               0x9e93 (size before relaxing)
- .debug_str     0x0000a42d      0x17f C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+ .debug_str     0x00009842      0x42f kc_cass_send_file.o
+                               0x97cb (size before relaxing)
+ .debug_str     0x00009c71      0x814 main.o
+                               0x9ea7 (size before relaxing)
+ .debug_str     0x0000a485      0x17f C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
                                 0x249 (size before relaxing)
- .debug_str     0x0000a5ac      0x230 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .debug_str     0x0000a604      0x230 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
                                 0x682 (size before relaxing)
- .debug_str     0x0000a7dc       0xb6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .debug_str     0x0000a834       0xb6 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
                                 0x2ec (size before relaxing)
- .debug_str     0x0000a892      0x17f C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+ .debug_str     0x0000a8ea      0x17f C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
                                 0x26e (size before relaxing)
 
-.debug_loc      0x00000000     0x88f3
+.debug_loc      0x00000000     0x8972
  *(.debug_loc)
  .debug_loc     0x00000000       0x7c debounced_keys.o
  .debug_loc     0x0000007c      0x9b6 display_util.o
  .debug_loc     0x00000a32       0x55 kc_cass_recv_file.o
- .debug_loc     0x00000a87      0x618 kc_cass_send_file.o
- .debug_loc     0x0000109f      0x166 main.o
- .debug_loc     0x00001205      0x38d C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
- .debug_loc     0x00001592     0x54f5 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .debug_loc     0x00006a87     0x16ef C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
- .debug_loc     0x00008176      0x77d C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+ .debug_loc     0x00000a87      0x697 kc_cass_send_file.o
+ .debug_loc     0x0000111e      0x166 main.o
+ .debug_loc     0x00001284      0x38d C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+ .debug_loc     0x00001611     0x54f5 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .debug_loc     0x00006b06     0x16ef C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .debug_loc     0x000081f5      0x77d C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1298,19 +1295,19 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x3e0
+.debug_ranges   0x00000000      0x3f0
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x18 debounced_keys.o
  .debug_ranges  0x00000018       0x40 display_util.o
  .debug_ranges  0x00000058       0x20 kc_cass_recv_file.o
- .debug_ranges  0x00000078       0x68 kc_cass_send_file.o
- .debug_ranges  0x000000e0       0x38 main.o
- .debug_ranges  0x00000118       0x38 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
- .debug_ranges  0x00000150      0x198 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
- .debug_ranges  0x000002e8       0x80 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
- .debug_ranges  0x00000368       0x78 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
+ .debug_ranges  0x00000078       0x78 kc_cass_send_file.o
+ .debug_ranges  0x000000f0       0x38 main.o
+ .debug_ranges  0x00000128       0x38 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(diskio.o)
+ .debug_ranges  0x00000160      0x198 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(ff.o)
+ .debug_ranges  0x000002f8       0x80 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\ff_avr\Debug_debugwire\libff_avr.a(mmc_avr_spi.o)
+ .debug_ranges  0x00000378       0x78 C:\Users\Bernd\Documents\Atmel Studio\7.0\Cass2SD\Cass2SD\lcd\Debug_debugwire\liblcd.a(lcd.o)
 
-.debug_macro    0x00000000     0x3ae6
+.debug_macro    0x00000000     0x3aec
  *(.debug_macro)
  .debug_macro   0x00000000       0x99 debounced_keys.o
  .debug_macro   0x00000099      0xa54 debounced_keys.o
@@ -1338,21 +1335,21 @@ END GROUP
  .debug_macro   0x00003026       0xe2 display_util.o
  .debug_macro   0x00003108       0x16 display_util.o
  .debug_macro   0x0000311e      0x1e3 display_util.o
- .debug_macro   0x00003301       0x28 display_util.o
- .debug_macro   0x00003329       0x22 display_util.o
- .debug_macro   0x0000334b       0x46 display_util.o
- .debug_macro   0x00003391       0xa8 kc_cass_format_def.o
- .debug_macro   0x00003439      0x130 kc_cass_recv_file.o
- .debug_macro   0x00003569       0x69 kc_cass_recv_file.o
- .debug_macro   0x000035d2       0x16 kc_cass_recv_file.o
- .debug_macro   0x000035e8       0x20 kc_cass_recv_file.o
- .debug_macro   0x00003608       0xd6 kc_cass_recv_file.o
- .debug_macro   0x000036de       0x1c kc_cass_recv_file.o
- .debug_macro   0x000036fa      0x15a kc_cass_send_file.o
- .debug_macro   0x00003854       0x34 kc_cass_send_file.o
- .debug_macro   0x00003888       0x28 kc_cass_send_file.o
- .debug_macro   0x000038b0      0x16c main.o
- .debug_macro   0x00003a1c       0x49 main.o
- .debug_macro   0x00003a65       0x81 main.o
+ .debug_macro   0x00003301       0x2e display_util.o
+ .debug_macro   0x0000332f       0x22 display_util.o
+ .debug_macro   0x00003351       0x46 display_util.o
+ .debug_macro   0x00003397       0xa8 kc_cass_format_def.o
+ .debug_macro   0x0000343f      0x130 kc_cass_recv_file.o
+ .debug_macro   0x0000356f       0x69 kc_cass_recv_file.o
+ .debug_macro   0x000035d8       0x16 kc_cass_recv_file.o
+ .debug_macro   0x000035ee       0x20 kc_cass_recv_file.o
+ .debug_macro   0x0000360e       0xd6 kc_cass_recv_file.o
+ .debug_macro   0x000036e4       0x1c kc_cass_recv_file.o
+ .debug_macro   0x00003700      0x15a kc_cass_send_file.o
+ .debug_macro   0x0000385a       0x34 kc_cass_send_file.o
+ .debug_macro   0x0000388e       0x28 kc_cass_send_file.o
+ .debug_macro   0x000038b6      0x16c main.o
+ .debug_macro   0x00003a22       0x49 main.o
+ .debug_macro   0x00003a6b       0x81 main.o
 OUTPUT(main.elf elf32-avr)
 LOAD linker stubs

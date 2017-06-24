@@ -125,8 +125,14 @@ UINT bytes_read = 0;
 uint8_t block_len = 128;
 bool has_checksum = false;
 KC_FILE_TYPE kc_file_type = RAW;
+uint8_t number_of_blocks = 0;
 
-static bool check_for_blocknrs() {
+/************************************************************************/
+/* Scans the file and checks if there are consecutive blocknrs          */
+/* sets block_len=128, start_buf_prt = buf+1 if file has no blocknrs    */
+/* sets block_len=129, start_buf_prt = buf if file provides blocknrs    */
+/************************************************************************/
+static bool detect_block_len() {
 	// rewind to start of file
 	if (disp_fr_err(f_lseek(&fhdl, 0))) {
 		f_close(&fhdl);
@@ -179,9 +185,22 @@ static bool check_for_blocknrs() {
 	return true;
 }
 
+static bool check_basic_fcb() {
+	KC_FCB_BASIC* fcb_basic = (KC_FCB_BASIC*) (buf + 1);
+	uint8_t b1 = fcb_basic->dateityp[0];
+	uint8_t b2 = fcb_basic->dateityp[1];
+	uint8_t b3 = fcb_basic->dateityp[2];
+	return ( b1 >= 0xd3 && b1 <= 0xd9 && b1 == b2 && b1 == b3);
+}
+
 static bool check_non_tap_types(FILINFO* Finfo) {
-	if(!check_for_blocknrs())
+	// non-TAP files may have the block numbers in the file or not
+	// this determines the block_len:
+	//  129 with blocknr
+	//  128 without blocknr
+	if(!detect_block_len()) {
 		return false;
+	}
 
 	// load the first block completely
 	// start_buf_ptr and block_len are now correct
@@ -189,49 +208,64 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 		f_close(&fhdl);
 		return false;
 	}
-	// check if BASIC header
 
-	KC_FCB_BASIC* fcb_basic = (KC_FCB_BASIC*) start_buf_ptr;
-	uint8_t b1 = fcb_basic->dateityp[0];
-	uint8_t b2 = fcb_basic->dateityp[1];
-	uint8_t b3 = fcb_basic->dateityp[2];
-	if ( b1 >= 0xd3 && b1 <= 0xd9 && b1 == b2 && b1 == b3) {
-		// BASIC header found
-		kc_file_type = BASIC;
+	// check if BASIC FCB
+	if (check_basic_fcb()) {
+		// BASIC FCB found
+		kc_file_type = BASIC_W_HEADER;
+		number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
+		if (block_len == 128) {
+			buf[0] = 1; // BASIC files start with block #1
+		}
 		return true;
 	}
 
-	char* ext = strchr(Finfo->fname,'.');
-
-	// check for extension SSS -> headerless BASIC files
-	if (!strcmp_P(ext+1,PSTR("SSS"))) {
-		kc_file_type = BASIC;
-		// Create BASIC header in the buffer
-		*start_buf_ptr = 0xd3;
-		*(start_buf_ptr+1) = 0xd3;
-		*(start_buf_ptr+2) = 0xd3;
-		// Copy the filename in the header
-		for (uint8_t i=3; i < 11; i++) {
-			if (Finfo->fname + i < ext)
-				start_buf_ptr[i] = Finfo->fname[i];
-			else
-				start_buf_ptr[i] = 0x20;
+	// check the file extension if it is of BASIC type ('SSS','TTT',...)
+	char* ext = strchr(Finfo->fname,'.') + 1;
+	for (uint8_t c = 0x53; c <= 0x59; c++) { // stepping through from 'S' to 'Y'
+		if (ext[0] == c && ext[1] == c && ext[2] == c) {
+			kc_file_type = BASIC_NO_HEADER; // -> we found a BASIC file ext.
+			// Create the BASIC FCB
+			start_buf_ptr[0] = c + 0x80; // set the magic 3 letter header (0xd3d3d3, 0xd4d4d4, ...)
+			start_buf_ptr[1] = c + 0x80;
+			start_buf_ptr[2] = c + 0x80;
+			// Copy the filename in the header
+			for (uint8_t i=0; i < 8; i++) {
+				if (Finfo->fname + i < (ext - 1)) {
+					start_buf_ptr[i+3] = Finfo->fname[i];
+				}
+				else {
+					start_buf_ptr[i+3] = 0x20;
+				}
+			}
+			// reload the file contents after the just created header
+			if (disp_fr_err(f_lseek(&fhdl, 0))) {
+				f_close(&fhdl);
+				return false;
+			}
+			uint8_t bytes_to_read = block_len - BASIC_HEADER_LEN;
+			if (disp_fr_err(f_read(&fhdl, start_buf_ptr + BASIC_HEADER_LEN, bytes_to_read, &bytes_read))) {
+				f_close(&fhdl);
+				return false;
+			}
+			if (bytes_read != bytes_to_read) {
+				disp_err("ERROR:","Blk too short!");
+				return false;
+			}
+			number_of_blocks = (uint8_t)((Finfo->fsize + BASIC_HEADER_LEN) / block_len);
+			if (block_len == 128) {
+				buf[0] = 1; // BASIC files start with block #1
+			}
+			return true;
 		}
-		// we have to reload since we've overwritten some data
-		if (disp_fr_err(f_lseek(&fhdl, 0))) {
-			f_close(&fhdl);
-			return false;
-		}
-		// load the data from the file after the header we just created
-		if (disp_fr_err(f_read(&fhdl, start_buf_ptr + 11, block_len - 11, &bytes_read))) {
-			f_close(&fhdl);
-			return false;
-		}
-		return true;			
 	}
 
-	// check if MC header
-	KC_FCB_MC* fcb_mc = (KC_FCB_MC*) start_buf_ptr;
+	if (block_len == 128) {
+		buf[0] = 0; // initialize the blocknr if not provided
+	}
+	
+	// No BASIC FCB and no BASIC extension, now check for MC header
+	KC_FCB_MC* fcb_mc = (KC_FCB_MC*) (buf + 1);
 	kc_file_type = MACHINE_CODE;
 	for (uint8_t i=0; i<8; i++) {
 		if ((fcb_mc->dateiname[i] < 0x21 || fcb_mc->dateiname[i] > 0x7f) && fcb_mc->dateiname[i] != 0) {
@@ -242,7 +276,7 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 	}
 
 	if (kc_file_type == MACHINE_CODE) {
-		// we still believe in MC type
+		// Filename is ok, now we check the file extension
 		for (uint8_t i=0; i<3; i++) {
 			if ((fcb_mc->dateityp[i] < 0x21 || fcb_mc->dateityp[i] > 0x7f) && fcb_mc->dateityp[i] != 0) {
 				// found unprintable character -> cannot be a real fcb
@@ -252,7 +286,7 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 		}
 	}
 
-	// still RAW, we have to create a FCB
+	// it is RAW, we have to create a FCB
 	if (kc_file_type == RAW) {
 		memset(start_buf_ptr,0x0,block_len);
 		// we reuse the fcb_mc pointer created earlier
@@ -273,9 +307,59 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 			}
 		}
 		fcb_mc->aadr = 0x300;
-		// we assume here that a RAW file doesn't have block numbers
-		fcb_mc->eadr = 0x300 + Finfo->fsize - 128;
+		number_of_blocks = (uint8_t)((Finfo->fsize / block_len) + 1);
+		if (block_len == 128) {
+			fcb_mc->eadr = 0x300 + Finfo->fsize;
+		}
+		else {
+			fcb_mc->eadr = 0x300 + (Finfo->fsize - number_of_blocks);
+		}
 		fcb_mc->sadr = 0xffff;
+	}
+	else { // it is MACHINE_CODE with FCB
+		number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
+	}
+	return true;
+}
+
+static bool check_tap_types(FILINFO* Finfo) {
+	// it is definitely TAP format which always has blocknumbers
+	// and doesnt need any other special recognition procedure
+	kc_file_type = TAP;
+	
+	number_of_blocks = (uint8_t)((Finfo->fsize - TAP_HEADER_LEN) / 129);
+	
+	// read the first block after the TAP_HEADER
+	if (disp_fr_err(f_lseek(&fhdl, TAP_HEADER_LEN)) || disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
+		f_close(&fhdl);
+		return false;
+	}
+
+	if (check_basic_fcb()) {
+		kc_file_type = TAP_BASIC;
+	} else {
+		// workaround for TAP files that contain a meaningless block 0 before the
+		// actual first BASIC block #1. Z9001 doesn't like that.
+		// so load the first block after the header and see if it is BASIC
+		if (disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
+			f_close(&fhdl);
+			return false;
+		}
+		if (check_basic_fcb()) {
+			// BASIC header found
+			kc_file_type = TAP_BASIC_EXTRA_BLOCKS;
+			number_of_blocks = (uint8_t)(((Finfo->fsize - TAP_HEADER_LEN) / 129) - 1);
+		}
+		else
+		{
+			// it is not BASIC
+			// rewind to beginning of first block after TAP header and reload
+			if (disp_fr_err(f_lseek(&fhdl, TAP_HEADER_LEN)) ||
+			disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
+				f_close(&fhdl);
+				return false;
+			}
+		}
 	}
 	return true;
 }
@@ -283,7 +367,7 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 static bool load_first_block_and_check_type(FILINFO* Finfo) {
 	block_len = 129;
 	start_buf_ptr = buf;
-	if (Finfo->fsize < 128) {
+	if (Finfo->fsize < 128) { // file too short -> we don't even care to look further
 		lcd_clrscr();
 		xprintf(PSTR("ERR:%s"),Finfo->fname);
 		lcd_gotoxy(0,1);
@@ -295,75 +379,30 @@ static bool load_first_block_and_check_type(FILINFO* Finfo) {
 		f_close(&fhdl);
 		return false;
 	}
-	// load first 16bytes to check for TAP header
+	// load first TAP_HEADER_LEN to check for TAP header
 	if (disp_fr_err(f_read(&fhdl, buf, TAP_HEADER_LEN, &bytes_read))) {
 		f_close(&fhdl);
 		return false;
 	}
 
 	if (strncmp_P((char*)buf,tap_header_str,bytes_read)) {
-		if(!check_non_tap_types(Finfo))
-			return false;
+		return check_non_tap_types(Finfo);
 	}
 	else {
-
-		// it is definitely TAP format which always has blocknumbers
-		// and doesnt need any other special recognition procedure
-		kc_file_type = TAP;
-
-		// workaround for TAP files that contain a meaningless block 0 before the
-		// actual first BASIC block #1. Z9001 doesn't like that.
-		// so load the first block after the header and see if it is BASIC
-		if (disp_fr_err(f_lseek(&fhdl, TAP_HEADER_LEN + 129)) || 
-			disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
-			f_close(&fhdl);
-			return false;
-		}
-		KC_FCB_BASIC* fcb_basic = (KC_FCB_BASIC*) (start_buf_ptr + 1);
-		uint8_t b1 = fcb_basic->dateityp[0];
-		uint8_t b2 = fcb_basic->dateityp[1];
-		uint8_t b3 = fcb_basic->dateityp[2];
-		if ( b1 >= 0xd3 && b1 <= 0xd9 && b1 == b2 && b1 == b3) {
-			// BASIC header found
-			kc_file_type = TAP_BASIC;
-		}
-		else
-		{
-			// it is not BASIC
-			// rewind to beginning of first block after TAP header and reload
-			if (disp_fr_err(f_lseek(&fhdl, TAP_HEADER_LEN)) ||
-				disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
-				f_close(&fhdl);
-				return false;
-			}
-		}
-		return true;
+		return check_tap_types(Finfo);
 	}
 	return true;
 }
 
 void send_file(FILINFO* Finfo) {
 	if (load_first_block_and_check_type(Finfo)) {
-		// block# handling
-		uint8_t num_of_last_block = (uint8_t)(Finfo->fsize / 128) - 1;
 		
-		// BASIC files start with block# 1!
-		if (block_len == 128) {
-			if (kc_file_type == BASIC) {
-				buf[0] = 1;
-				num_of_last_block++;
-			}
-			else {
-				buf[0] = 0;
-			}
-		}
-
-		display_sendinfo(Finfo->fname,block_len,num_of_last_block,kc_file_type);
+		display_sendinfo(Finfo->fname,block_len,number_of_blocks,kc_file_type);
 
 		while(1) {
 			// calculate checksum
 			buf[129] = 0;
-			for (int i = 1; i < 129; i++)
+			for (uint8_t i = 1; i < 129; i++)
 				buf[129] += buf[i];
 				
 			// Send "Vorton"
@@ -373,7 +412,7 @@ void send_file(FILINFO* Finfo) {
 					num_vorton = VORTON_BEGIN;
 					break;
 				case 1:
-					if (kc_file_type == TAP_BASIC || kc_file_type == BASIC)
+					if (kc_file_type == TAP_BASIC || kc_file_type == TAP_BASIC_EXTRA_BLOCKS || kc_file_type == BASIC_NO_HEADER || kc_file_type == BASIC_W_HEADER)
 						num_vorton = VORTON_BEGIN;
 					else
 						num_vorton = VORTON_BLOCK;
@@ -396,17 +435,27 @@ void send_file(FILINFO* Finfo) {
 			for (uint8_t i = 0; i < SEND_BUF_SIZE; i++)
 				send_byte(buf[i]);
 				
-			if (buf[0] == 0xff) {
+			if (
+				(
+					(
+						kc_file_type == BASIC_NO_HEADER || 
+						kc_file_type == BASIC_W_HEADER || 
+						kc_file_type == TAP_BASIC || 
+						kc_file_type == TAP_BASIC_EXTRA_BLOCKS
+					)
+					&& buf[0] == number_of_blocks
+				)
+				|| buf[0] == 0xff) { // send the final SPACE
 				send_bit(SPACE);
-				if (kc_file_type != BASIC || kc_file_type != TAP_BASIC) {
-					while(send_state != DONE);
-					CASS_OUT_PORT |= _BV(CASS_OUT_PIN); // final L->H edge not for BASIC
-				}
-				break; // exit while loop				
+				while(send_state != DONE);
+				CASS_OUT_PORT |= _BV(CASS_OUT_PIN); // final L->H edge
+				break; // we are done -> exit while loop				
 			}
 			// read the next block
-			if (disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read)))
+			if (disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
+				disp_err("ERROR","EOF too early!");
 				break;
+			}
 			if (bytes_read != block_len) {
 				disp_err("ERROR:","Blk too short!");
 				break;
@@ -414,9 +463,14 @@ void send_file(FILINFO* Finfo) {
 			// generate next blocknr if it doesnt come from the file
 			if (block_len==128) {
 				buf[0]++;
-				if (buf[0] == num_of_last_block)
+				if (buf[0] == (number_of_blocks - 1) && kc_file_type != BASIC_NO_HEADER && kc_file_type != BASIC_W_HEADER)
 					buf[0]=0xff;
 			}
+			// Skip 0xff block for TAP_BASIC_EXTRA_BLOCKS
+			if (kc_file_type == TAP_BASIC_EXTRA_BLOCKS && buf[0] == 0xff) {
+				buf[0] = number_of_blocks;
+			}
+			
 		}
 		f_close(&fhdl);
 	}

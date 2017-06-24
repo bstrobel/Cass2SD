@@ -35,18 +35,18 @@ typedef struct
 {
 	char dateityp[3];
 	char dateiname[8];
-	uint16_t adr1;
-	uint16_t adr2;
 } KC_FCB_BASIC;
-
+#define BASIC_HEADER_LEN 11
 
 typedef enum
 {
-	BASIC,
+	BASIC_NO_HEADER,
+	BASIC_W_HEADER,
 	MACHINE_CODE,
 	RAW,
 	TAP,
-	TAP_BASIC
+	TAP_BASIC,
+	TAP_BASIC_EXTRA_BLOCKS
 } KC_FILE_TYPE;
 
 #define VORTON_BEGIN 6000
