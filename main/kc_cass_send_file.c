@@ -398,6 +398,7 @@ static bool load_first_block_and_check_type(FILINFO* Finfo) {
 
 void send_file(FILINFO* Finfo) {
 	select_key_pressed = false;
+	uint8_t current_block = 1;
 	if (load_first_block_and_check_type(Finfo)) {
 		
 		display_sendinfo(Finfo->fname,block_len,number_of_blocks,kc_file_type);
@@ -409,28 +410,13 @@ void send_file(FILINFO* Finfo) {
 				buf[129] += buf[i];
 				
 			// Send "Vorton"
-			int num_vorton = 0;
-			switch (buf[0]) {
-				case 0:
-					num_vorton = VORTON_BEGIN;
-					break;
-				case 1:
-					if (TYPE_IS_BASIC) {
-						num_vorton = VORTON_BEGIN;
-					}
-					else {
-						num_vorton = VORTON_BLOCK;
-					}
-					break;
-				case 0xff:
-					num_vorton = VORTON_FFBLOCK;
-					break;
-				default:
-					num_vorton = VORTON_BLOCK;
-					break;
+			int num_vorton = VORTON_BLOCK;
+			if (current_block == 1) {
+				num_vorton = VORTON_BEGIN;
+			} else if (current_block == number_of_blocks) {
+				num_vorton = VORTON_FFBLOCK;
 			}
 			display_upd_sendinfo(buf[0]);
-			
 			while(send_state != DONE); // wait for the previous SPACE to finish
 			for (int i = 0; i < num_vorton; i++) {
 				send_bit(ONE);
@@ -449,7 +435,7 @@ void send_file(FILINFO* Finfo) {
 				}
 			}
 				
-			if ((TYPE_IS_BASIC && buf[0] == number_of_blocks) || buf[0] == 0xff) { // send the final SPACE
+			if (current_block == number_of_blocks) { // send the final SPACE
 				send_bit(SPACE);
 				while(send_state != DONE);
 				CASS_OUT_PORT |= _BV(CASS_OUT_PIN); // final L->H edge
@@ -474,7 +460,7 @@ void send_file(FILINFO* Finfo) {
 			if (kc_file_type == TAP_BASIC_EXTRA_BLOCKS && buf[0] == 0xff) {
 				buf[0] = number_of_blocks;
 			}
-			
+			current_block++;
 		}
 		f_close(&fhdl);
 	}
