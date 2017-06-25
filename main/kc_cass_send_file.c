@@ -444,7 +444,8 @@ void send_file(FILINFO* Finfo) {
 				if (select_key_pressed) {
 					select_key_pressed = false;
 					disp_err("SEND FILE","INTERRUPTED!");
-					break;
+					f_close(&fhdl);
+					return;
 				}
 			}
 				
