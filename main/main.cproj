@@ -190,10 +190,10 @@
     <Compile Include="display_util.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="kc_cass_format_def.c">
+    <Compile Include="kc_cass_common.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="kc_cass_format_def.h">
+    <Compile Include="kc_cass_common.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="kc_cass_recv_file.c">

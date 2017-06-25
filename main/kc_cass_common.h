@@ -13,6 +13,11 @@
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
 
+#define DATA_BUF_SIZE 130
+extern uint8_t buf[];
+
+typedef enum {SPACE=0, ONE, ZERO} BIT_TYPE;
+
 extern const char tap_header_str[] PROGMEM;
 #define TAP_HEADER_LEN 16
 

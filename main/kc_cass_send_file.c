@@ -12,19 +12,29 @@
 #include "../lcd/lcd.h"
 
 #include "kc_cass_send_file.h"
-#include "kc_cass_format_def.h"
+#include "kc_cass_common.h"
 #include "display_util.h"
+#include "debounced_keys.h"
 
-typedef enum {SPACE=0, ONE, ZERO} BIT_TYPE;
 
-#define SEND_BUF_SIZE 130
-uint8_t buf[SEND_BUF_SIZE]; //send buffer
-uint8_t* start_buf_ptr = buf;
-
-volatile SEND_STATE send_state = DONE;
 
 FIL fhdl;
 FRESULT fr;
+
+volatile SEND_STATE send_state = DONE;
+uint8_t* start_buf_ptr = buf;
+UINT bytes_read = 0;
+uint8_t block_len = 128;
+KC_FILE_TYPE kc_file_type = RAW;
+uint8_t number_of_blocks = 0;
+
+#define HAS_NO_BLOCKNR (block_len == 128)
+#define TYPE_IS_BASIC ( \
+	kc_file_type == TAP_BASIC \
+	|| kc_file_type == TAP_BASIC_EXTRA_BLOCKS \
+	|| kc_file_type == BASIC_NO_HEADER \
+	|| kc_file_type == BASIC_W_HEADER \
+)
 
 #define OCR_SPACE_SENDFILE (F_CPU / 64 / 571 / 2 - 1) //108
 #define OCR_BIT_ONE_SENDFILE (F_CPU / 64 / 1087 / 2 - 1) //56
@@ -121,12 +131,6 @@ static void send_byte(uint8_t byte) {
 	send_bit(SPACE); // this doesn't block!
 }
 
-UINT bytes_read = 0;
-uint8_t block_len = 128;
-bool has_checksum = false;
-KC_FILE_TYPE kc_file_type = RAW;
-uint8_t number_of_blocks = 0;
-
 /************************************************************************/
 /* Scans the file and checks if there are consecutive blocknrs          */
 /* sets block_len=128, start_buf_prt = buf+1 if file has no blocknrs    */
@@ -214,7 +218,7 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 		// BASIC FCB found
 		kc_file_type = BASIC_W_HEADER;
 		number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
-		if (block_len == 128) {
+		if (HAS_NO_BLOCKNR) {
 			buf[0] = 1; // BASIC files start with block #1
 		}
 		return true;
@@ -253,14 +257,14 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 				return false;
 			}
 			number_of_blocks = (uint8_t)((Finfo->fsize + BASIC_HEADER_LEN) / block_len);
-			if (block_len == 128) {
+			if (HAS_NO_BLOCKNR) {
 				buf[0] = 1; // BASIC files start with block #1
 			}
 			return true;
 		}
 	}
 
-	if (block_len == 128) {
+	if (HAS_NO_BLOCKNR) {
 		buf[0] = 0; // initialize the blocknr if not provided
 	}
 	
@@ -273,58 +277,56 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 			kc_file_type = RAW;
 			break;
 		}
-	}
-
-	if (kc_file_type == MACHINE_CODE) {
-		// Filename is ok, now we check the file extension
-		for (uint8_t i=0; i<3; i++) {
-			if ((fcb_mc->dateityp[i] < 0x21 || fcb_mc->dateityp[i] > 0x7f) && fcb_mc->dateityp[i] != 0) {
-				// found unprintable character -> cannot be a real fcb
-				kc_file_type = RAW;
-				break;
+		if (kc_file_type == MACHINE_CODE) {
+			// Filename is ok, now we check the file extension
+			for (uint8_t i=0; i<3; i++) {
+				if ((fcb_mc->dateityp[i] < 0x21 || fcb_mc->dateityp[i] > 0x7f) && fcb_mc->dateityp[i] != 0) {
+					// found unprintable character -> cannot be a real fcb
+					kc_file_type = RAW;
+					break;
+				}
+			}
+			if (kc_file_type == MACHINE_CODE) {
+				// now we're as sure as possible that we have MACHINE_CODE
+				number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
+				return true;
 			}
 		}
 	}
 
 	// it is RAW, we have to create a FCB
-	if (kc_file_type == RAW) {
-		memset(start_buf_ptr,0x0,block_len);
-		// we reuse the fcb_mc pointer created earlier
-		for (uint8_t i=0; i<8; i++) {
-			if (Finfo->fname + i < ext)
-				fcb_mc->dateiname[i] = Finfo->fname[i];
-			else
-				fcb_mc->dateiname[i] = 0x20;
-		}
-		bool end_reached = false;
-		for (uint8_t i=0; i<3; i++) {
-			if (!end_reached && ext[i+1])
-				fcb_mc->dateityp[i] = ext[i+1];
-			else
-			{
-				end_reached=true;
-				fcb_mc->dateiname[i] = 0x20;
-			}
-		}
-		fcb_mc->aadr = 0x300;
-		number_of_blocks = (uint8_t)((Finfo->fsize / block_len) + 1);
-		if (block_len == 128) {
-			fcb_mc->eadr = 0x300 + Finfo->fsize;
-		}
-		else {
-			fcb_mc->eadr = 0x300 + (Finfo->fsize - number_of_blocks);
-		}
-		fcb_mc->sadr = 0xffff;
+	memset(start_buf_ptr,0x0,block_len);
+	// we reuse the fcb_mc pointer created earlier
+	for (uint8_t i=0; i<8; i++) {
+		if (Finfo->fname + i < ext)
+		fcb_mc->dateiname[i] = Finfo->fname[i];
+		else
+		fcb_mc->dateiname[i] = 0x20;
 	}
-	else { // it is MACHINE_CODE with FCB
-		number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
+	bool end_reached = false;
+	for (uint8_t i=0; i<3; i++) {
+		if (!end_reached && ext[i+1])
+		fcb_mc->dateityp[i] = ext[i+1];
+		else
+		{
+			end_reached=true;
+			fcb_mc->dateiname[i] = 0x20;
+		}
 	}
+	fcb_mc->aadr = 0x300;
+	number_of_blocks = (uint8_t)((Finfo->fsize / block_len) + 1);
+	if (HAS_NO_BLOCKNR) {
+		fcb_mc->eadr = 0x300 + Finfo->fsize;
+	}
+	else {
+		fcb_mc->eadr = 0x300 + (Finfo->fsize - number_of_blocks);
+	}
+	fcb_mc->sadr = 0xffff;
+
 	return true;
 }
 
 static bool check_tap_types(FILINFO* Finfo) {
-	// it is definitely TAP format which always has blocknumbers
-	// and doesnt need any other special recognition procedure
 	kc_file_type = TAP;
 	
 	number_of_blocks = (uint8_t)((Finfo->fsize - TAP_HEADER_LEN) / 129);
@@ -348,7 +350,7 @@ static bool check_tap_types(FILINFO* Finfo) {
 		if (check_basic_fcb()) {
 			// BASIC header found
 			kc_file_type = TAP_BASIC_EXTRA_BLOCKS;
-			number_of_blocks = (uint8_t)(((Finfo->fsize - TAP_HEADER_LEN) / 129) - 1);
+			number_of_blocks--;
 		}
 		else
 		{
@@ -395,6 +397,7 @@ static bool load_first_block_and_check_type(FILINFO* Finfo) {
 }
 
 void send_file(FILINFO* Finfo) {
+	select_key_pressed = false;
 	if (load_first_block_and_check_type(Finfo)) {
 		
 		display_sendinfo(Finfo->fname,block_len,number_of_blocks,kc_file_type);
@@ -412,10 +415,12 @@ void send_file(FILINFO* Finfo) {
 					num_vorton = VORTON_BEGIN;
 					break;
 				case 1:
-					if (kc_file_type == TAP_BASIC || kc_file_type == TAP_BASIC_EXTRA_BLOCKS || kc_file_type == BASIC_NO_HEADER || kc_file_type == BASIC_W_HEADER)
+					if (TYPE_IS_BASIC) {
 						num_vorton = VORTON_BEGIN;
-					else
+					}
+					else {
 						num_vorton = VORTON_BLOCK;
+					}
 					break;
 				case 0xff:
 					num_vorton = VORTON_FFBLOCK;
@@ -427,25 +432,23 @@ void send_file(FILINFO* Finfo) {
 			display_upd_sendinfo(buf[0]);
 			
 			while(send_state != DONE); // wait for the previous SPACE to finish
-			for (int i = 0; i < num_vorton; i++)
+			for (int i = 0; i < num_vorton; i++) {
 				send_bit(ONE);
+			}
 			send_bit(SPACE);
 			
 			// send the block
-			for (uint8_t i = 0; i < SEND_BUF_SIZE; i++)
+			for (uint8_t i = 0; i < DATA_BUF_SIZE; i++) {
 				send_byte(buf[i]);
+			
+				if (select_key_pressed) {
+					select_key_pressed = false;
+					disp_err("SEND FILE","INTERRUPTED!");
+					break;
+				}
+			}
 				
-			if (
-				(
-					(
-						kc_file_type == BASIC_NO_HEADER || 
-						kc_file_type == BASIC_W_HEADER || 
-						kc_file_type == TAP_BASIC || 
-						kc_file_type == TAP_BASIC_EXTRA_BLOCKS
-					)
-					&& buf[0] == number_of_blocks
-				)
-				|| buf[0] == 0xff) { // send the final SPACE
+			if ((TYPE_IS_BASIC && buf[0] == number_of_blocks) || buf[0] == 0xff) { // send the final SPACE
 				send_bit(SPACE);
 				while(send_state != DONE);
 				CASS_OUT_PORT |= _BV(CASS_OUT_PIN); // final L->H edge
@@ -461,7 +464,7 @@ void send_file(FILINFO* Finfo) {
 				break;
 			}
 			// generate next blocknr if it doesnt come from the file
-			if (block_len==128) {
+			if (HAS_NO_BLOCKNR) {
 				buf[0]++;
 				if (buf[0] == (number_of_blocks - 1) && kc_file_type != BASIC_NO_HEADER && kc_file_type != BASIC_W_HEADER)
 					buf[0]=0xff;

@@ -20,7 +20,8 @@ kc_cass_send_file.d kc_cass_send_file.o: .././kc_cass_send_file.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h \
  .././../ff_avr/xitoa.h .././../ff_avr/ff.h .././../ff_avr/integer.h \
  .././../ff_avr/ffconf.h .././../ff_avr/diskio.h .././../lcd/lcd.h \
- .././kc_cass_send_file.h .././kc_cass_format_def.h .././display_util.h
+ .././kc_cass_send_file.h .././kc_cass_common.h .././display_util.h \
+ .././debounced_keys.h
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -74,6 +75,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\
 
 .././kc_cass_send_file.h:
 
-.././kc_cass_format_def.h:
+.././kc_cass_common.h:
 
 .././display_util.h:
+
+.././debounced_keys.h:

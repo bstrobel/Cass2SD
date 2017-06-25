@@ -10,7 +10,7 @@
 #define DISPLAY_UTIL_H_
 #include <stdbool.h>
 #include "../ff_avr/ff.h"
-#include "kc_cass_format_def.h"
+#include "kc_cass_common.h"
 
 #define DIR_IDX_REC 0
 #define DIR_IDX_GO_UP DIR_IDX_REC + 1

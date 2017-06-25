@@ -6,6 +6,8 @@
  */ 
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
-#include "kc_cass_format_def.h"
+#include "kc_cass_common.h"
 
 const char tap_header_str[] PROGMEM = "\xc3KC-TAPE by AF. ";
+
+uint8_t buf[DATA_BUF_SIZE]; //send buffer

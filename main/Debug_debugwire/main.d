@@ -22,7 +22,7 @@ main.d main.o: .././main.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h \
  .././../ff_avr/xitoa.h .././../ff_avr/ff.h .././../ff_avr/integer.h \
  .././../ff_avr/ffconf.h .././../ff_avr/diskio.h .././../lcd/lcd.h \
- .././debounced_keys.h .././display_util.h .././kc_cass_format_def.h \
+ .././debounced_keys.h .././display_util.h .././kc_cass_common.h \
  .././kc_cass_send_file.h .././kc_cass_recv_file.h
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
@@ -83,7 +83,7 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\
 
 .././display_util.h:
 
-.././kc_cass_format_def.h:
+.././kc_cass_common.h:
 
 .././kc_cass_send_file.h:
 
