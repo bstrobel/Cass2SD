@@ -22,11 +22,7 @@
 #include "display_util.h"
 #include "kc_cass_send_file.h"
 #include "kc_cass_recv_file.h"
-
-DIR Dir;			/* http://elm-chan.org/fsw/ff/doc/sdir.html */
-FILINFO Finfo; /* http://elm-chan.org/fsw/ff/doc/sfileinfo.html */
-FRESULT fr;
-FATFS FatFs;		/* File system object for each logical drive */
+#include "kc_cass_common.h"
 
 /*---------------------------------------------------------*/
 /* disk_and_debounce_timer                                 */
@@ -171,6 +167,7 @@ int main(void)
 	// main loop
 	while(1)
 	{
+		kc_cass_handle_recv_file();
 		switch(display_task)
 		{
 		case UP:
@@ -188,11 +185,6 @@ int main(void)
 		{
 			switch (dir_idx)
 			{
-				case DIR_IDX_REC:
-				{
-					recv_file(&Finfo);
-					break;
-				}
 				case DIR_IDX_GO_UP:
 				{
 					f_chdir("..");

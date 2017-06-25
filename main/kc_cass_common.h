@@ -12,6 +12,14 @@
 #include <stdint.h>
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
+#include "../ff_avr/ff.h"
+
+extern DIR Dir;			/* http://elm-chan.org/fsw/ff/doc/sdir.html */
+extern FILINFO Finfo; /* http://elm-chan.org/fsw/ff/doc/sfileinfo.html */
+extern FRESULT fr;
+extern FATFS FatFs;		/* File system object for each logical drive */
+extern FIL fhdl;
+
 
 #define DATA_BUF_SIZE 130
 extern uint8_t buf[];

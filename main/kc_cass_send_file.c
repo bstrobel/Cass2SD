@@ -16,11 +16,6 @@
 #include "display_util.h"
 #include "debounced_keys.h"
 
-
-
-FIL fhdl;
-FRESULT fr;
-
 volatile SEND_STATE send_state = DONE;
 uint8_t* start_buf_ptr = buf;
 UINT bytes_read = 0;

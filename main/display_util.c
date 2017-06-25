@@ -25,18 +25,20 @@ const char pct_X_str[] PROGMEM = "0x%02X 0x%02X 0x%02X";
 char dir_name[DIR_NAME_SIZE]; // 8 char name, 1 char dot, 3 char ext, \0 byte
 int16_t dir_idx = 0;
 
-bool disp_fr_err(FRESULT fr) {
-	if (fr != FR_OK) {
-		display_fresult(fr);
+bool disp_fr_err(FRESULT r) {
+	if (r != FR_OK) {
+		display_fresult(r);
 		_delay_ms(ERROR_DISP_MILLIS);
 		return true;
 	}
-	else
-	return false;
+	else {
+		return false;
+	}
 }
 
 void display_fresult (FRESULT rc)
 {
+	fr = rc;
 	PGM_P p;
 	static const char str[] PROGMEM =
 	"OK\0DISK_ERR\0INT_ERR\0NOT_READY\0NO_FILE\0NO_PATH\0INVALID_NAME\0"

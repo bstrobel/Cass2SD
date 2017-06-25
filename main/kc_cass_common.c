@@ -6,7 +6,14 @@
  */ 
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
+#include "../ff_avr/ff.h"
 #include "kc_cass_common.h"
+
+DIR Dir;			/* http://elm-chan.org/fsw/ff/doc/sdir.html */
+FILINFO Finfo; /* http://elm-chan.org/fsw/ff/doc/sfileinfo.html */
+FRESULT fr;
+FATFS FatFs;		/* File system object for each logical drive */
+FIL fhdl;
 
 const char tap_header_str[] PROGMEM = "\xc3KC-TAPE by AF. ";
 
