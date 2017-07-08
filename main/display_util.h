@@ -12,8 +12,7 @@
 #include "../ff_avr/ff.h"
 #include "kc_cass_common.h"
 
-#define DIR_IDX_REC 0
-#define DIR_IDX_GO_UP DIR_IDX_REC + 1
+#define DIR_IDX_GO_UP 0
 #define DIR_IDX_FIRST_FILE DIR_IDX_GO_UP + 1
 #define DIR_NAME_SIZE 13
 
@@ -25,6 +24,8 @@ extern int16_t dir_idx;
 void display_fileinfo(FILINFO*);
 void display_sendinfo(char* filename, uint8_t block_len, uint8_t num_blocks, KC_FILE_TYPE file_type);
 void display_upd_sendinfo(uint8_t blocknr);
+void display_recvinfo(char* filename, uint8_t blocknr);
+void display_upd_recvinfo(uint8_t blocknr);
 void display_fresult (FRESULT);
 void disp_err(char* line1, char* line2);
 bool disp_fr_err(FRESULT);

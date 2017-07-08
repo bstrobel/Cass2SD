@@ -66,4 +66,6 @@ typedef enum
 #define VORTON_BLOCK 160
 #define VORTON_FFBLOCK 5296
 
+uint8_t calculate_checksum(void);
+
 #endif /* KC_CASS_FORMAT_DEF_H_ */

@@ -18,3 +18,11 @@ FIL fhdl;
 const char tap_header_str[] PROGMEM = "\xc3KC-TAPE by AF. ";
 
 uint8_t buf[DATA_BUF_SIZE]; //send buffer
+
+uint8_t calculate_checksum() {
+	uint8_t chksum = 0;
+	for (uint8_t i = 1; i < 129; i++) {
+		chksum += buf[i];
+	}
+	return chksum;
+}

@@ -127,10 +127,8 @@ static void power_save_config()
 	PORTD = 0xFF;
 	power_twi_disable();
 	power_adc_disable();
-	power_timer1_disable();
 	power_usart0_disable();
 	set_sleep_mode(SLEEP_MODE_IDLE);
-	//set_sleep_mode(SLEEP_MODE_PWR_SAVE);
 	sleep_bod_disable();
 	sleep_enable();
 }
@@ -153,8 +151,14 @@ int main(void)
 		fr = f_mount(&FatFs, "", 1);
 		if (fr != FR_OK)
 		{
-			display_fresult(fr);
-			_delay_ms(500);
+			if (fr == FR_NOT_READY) {
+				disp_err("INITIALIZING","SD CARD");
+				_delay_ms(500);
+			}
+			else {
+				disp_fr_err(fr);
+			
+			}
 		}
 	} 
 	while (fr != FR_OK);

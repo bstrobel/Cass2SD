@@ -399,11 +399,8 @@ void send_file(FILINFO* Finfo) {
 		display_sendinfo(Finfo->fname,block_len,number_of_blocks,kc_file_type);
 
 		while(1) {
-			// calculate checksum
-			buf[129] = 0;
-			for (uint8_t i = 1; i < 129; i++)
-				buf[129] += buf[i];
-				
+			buf[129] = calculate_checksum();
+
 			// Send "Vorton"
 			int num_vorton = VORTON_BLOCK;
 			if (current_block == 1) {

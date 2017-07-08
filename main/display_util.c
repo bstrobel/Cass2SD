@@ -7,6 +7,7 @@
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
 #include <util/delay.h>
+#include <stddef.h>
 #include <stdbool.h>
 #include "../ff_avr/ff.h"
 #include "../ff_avr/xitoa.h"
@@ -15,7 +16,6 @@
 #include "debounced_keys.h"
 
 const char dotdotdir_str[] PROGMEM = ".. [GO UP]";
-const char record_cmd_str[] PROGMEM = "[RECORD HERE]";
 const char dir_str[] PROGMEM = "[DIR]";
 const char empty_dir_str[] PROGMEM = "[Empty Dir]";
 const char pct_s_str[] PROGMEM = "%s";
@@ -61,13 +61,6 @@ void display_fileinfo(FILINFO* Finfo)
 	lcd_clrscr();
 	switch (dir_idx)
 	{
-		case DIR_IDX_REC:
-		{
-			xprintf(pct_s_str, dir_name);
-			lcd_gotoxy(0,1);
-			xprintf(record_cmd_str);
-			break;
-		}
 		case DIR_IDX_GO_UP:
 		{
 			xprintf(pct_s_str, dir_name);
@@ -137,6 +130,27 @@ void display_upd_sendinfo(uint8_t blocknr)
 	lcd_gotoxy(1,1);
 	xprintf(PSTR("%03d"),blocknr);
 }
+
+void display_recvinfo(char* filename, uint8_t blocknr) {
+	lcd_clrscr();
+	if (filename == NULL) {
+		xprintf(PSTR("RCV:????????.???"));
+		lcd_gotoxy(0,1);
+		xprintf(PSTR("#???"));
+	}
+	else {
+		xprintf(PSTR("RCV:%s"),filename);
+		lcd_gotoxy(0,1);
+		xprintf(PSTR("#%03d"),blocknr);
+	}
+}
+
+void display_upd_recvinfo(uint8_t blocknr)
+{
+	lcd_gotoxy(1,1);
+	xprintf(PSTR("%03d"),blocknr);
+}
+
 /* Format string is placed in the ROM. The format flags is similar to printf().
 
    %[flag][width][size]type
