@@ -13,6 +13,8 @@
 #define CASS_IN_DDR DDRD
 #define CASS_IN_PIN PORTD2 //Pin 4 for ATMega328P
 
+#define FILE_EXT "TAP"
+
 #ifdef DEBUG_RECV_TIMER
 #define MONITOR_RECV_PORT PORTB
 #define MONITOR_RECV_DDR DDRB

@@ -9,6 +9,7 @@
 #include <util/delay.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include "../ff_avr/ff.h"
 #include "../ff_avr/xitoa.h"
 #include "../lcd/lcd.h"
@@ -21,6 +22,8 @@ const char empty_dir_str[] PROGMEM = "[Empty Dir]";
 const char pct_s_str[] PROGMEM = "%s";
 const char pct_d_str[] PROGMEM = "%d";
 const char pct_X_str[] PROGMEM = "0x%02X 0x%02X 0x%02X";
+const char msg_error_str[] PROGMEM = "ERROR";
+const char msg_info_str[] PROGMEM = "INFO";
 
 char dir_name[DIR_NAME_SIZE]; // 8 char name, 1 char dot, 3 char ext, \0 byte
 int16_t dir_idx = 0;
@@ -176,11 +179,11 @@ void display_upd_recvinfo(uint8_t blocknr)
 
 */
 
-void disp_err(char* line1, char* line2) {
+void disp_msg_p(const char* PROGMEM line1, const char* PROGMEM line2) {
 	lcd_clrscr();
-	xprintf(pct_s_str,line1);
+	xprintf(line1);
 	lcd_gotoxy(0,1);
-	xprintf(pct_s_str,line2);
+	xprintf(line2);
 	_delay_ms(ERROR_DISP_MILLIS);
 }
 

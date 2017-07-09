@@ -19,7 +19,8 @@ kc_cass_recv_file.d kc_cass_recv_file.o: .././kc_cass_recv_file.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h \
  .././kc_cass_common.h .././../ff_avr/ff.h .././../ff_avr/integer.h \
- .././../ff_avr/ffconf.h .././display_util.h .././kc_cass_recv_file.h
+ .././../ff_avr/ffconf.h .././display_util.h .././kc_cass_recv_file.h \
+ .././../ff_avr/xitoa.h .././../lcd/lcd.h
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -70,3 +71,7 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\
 .././display_util.h:
 
 .././kc_cass_recv_file.h:
+
+.././../ff_avr/xitoa.h:
+
+.././../lcd/lcd.h:

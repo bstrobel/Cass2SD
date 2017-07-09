@@ -29,9 +29,12 @@ typedef enum {SPACE=0, ONE, ZERO} BIT_TYPE;
 extern const char tap_header_str[] PROGMEM;
 #define TAP_HEADER_LEN 16
 
+#define LEN_DATEINAME 8
+#define LEN_DATEITYP 3
+
 typedef struct{
-	char dateiname[8];
-	char dateityp[3];
+	char dateiname[LEN_DATEINAME];
+	char dateityp[LEN_DATEITYP];
 	uint8_t ext1;
 	uint8_t ext2;
 	uint8_t psum;
@@ -46,10 +49,10 @@ typedef struct{
 
 typedef struct
 {
-	char dateityp[3];
-	char dateiname[8];
+	char dateityp[LEN_DATEITYP];
+	char dateiname[LEN_DATEINAME];
 } KC_FCB_BASIC;
-#define BASIC_HEADER_LEN 11
+#define BASIC_HEADER_LEN (LEN_DATEINAME + LEN_DATEITYP)
 
 typedef enum
 {
@@ -67,5 +70,6 @@ typedef enum
 #define VORTON_FFBLOCK 5296
 
 uint8_t calculate_checksum(void);
+bool check_is_basic_fcb(void);
 
 #endif /* KC_CASS_FORMAT_DEF_H_ */

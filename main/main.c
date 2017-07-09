@@ -140,20 +140,18 @@ int main(void)
 	lcd_init(LCD_DISP_ON);
 	xdev_out(lcd_putc);
 	keys_init();
-	kc_cass_send_file_init();
-	kc_cass_recv_file_init();
 	disk_and_debounce_timer_init();
 	sei();
 
 	// mount the SD card
 	do 
 	{
+		_delay_ms(500);
 		fr = f_mount(&FatFs, "", 1);
 		if (fr != FR_OK)
 		{
 			if (fr == FR_NOT_READY) {
-				disp_err("INITIALIZING","SD CARD");
-				_delay_ms(500);
+				disp_msg_p(PSTR("INITIALIZING"),PSTR("SD CARD"));
 			}
 			else {
 				disp_fr_err(fr);
@@ -162,6 +160,9 @@ int main(void)
 		}
 	} 
 	while (fr != FR_OK);
+	
+	kc_cass_send_file_init();
+	kc_cass_recv_file_init();
 	
 	// initialize the menu system and display greeting
 	f_getcwd(dir_name,DIR_NAME_SIZE);

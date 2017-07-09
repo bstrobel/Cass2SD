@@ -16,6 +16,8 @@
 #include "display_util.h"
 #include "debounced_keys.h"
 
+const char msg_block_too_short_str[] PROGMEM = "BLOCK TOO SHORT!";
+
 volatile SEND_STATE send_state = DONE;
 uint8_t* start_buf_ptr = buf;
 UINT bytes_read = 0;
@@ -184,14 +186,6 @@ static bool detect_block_len() {
 	return true;
 }
 
-static bool check_basic_fcb() {
-	KC_FCB_BASIC* fcb_basic = (KC_FCB_BASIC*) (buf + 1);
-	uint8_t b1 = fcb_basic->dateityp[0];
-	uint8_t b2 = fcb_basic->dateityp[1];
-	uint8_t b3 = fcb_basic->dateityp[2];
-	return ( b1 >= 0xd3 && b1 <= 0xd9 && b1 == b2 && b1 == b3);
-}
-
 static bool check_non_tap_types(FILINFO* Finfo) {
 	// non-TAP files may have the block numbers in the file or not
 	// this determines the block_len:
@@ -209,7 +203,7 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 	}
 
 	// check if BASIC FCB
-	if (check_basic_fcb()) {
+	if (check_is_basic_fcb()) {
 		// BASIC FCB found
 		kc_file_type = BASIC_W_HEADER;
 		number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
@@ -248,7 +242,7 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 				return false;
 			}
 			if (bytes_read != bytes_to_read) {
-				disp_err("ERROR:","Blk too short!");
+				disp_msg_p(msg_error_str,msg_block_too_short_str);
 				return false;
 			}
 			number_of_blocks = (uint8_t)((Finfo->fsize + BASIC_HEADER_LEN) / block_len);
@@ -332,7 +326,7 @@ static bool check_tap_types(FILINFO* Finfo) {
 		return false;
 	}
 
-	if (check_basic_fcb()) {
+	if (check_is_basic_fcb()) {
 		kc_file_type = TAP_BASIC;
 	} else {
 		// workaround for TAP files that contain a meaningless block 0 before the
@@ -342,7 +336,7 @@ static bool check_tap_types(FILINFO* Finfo) {
 			f_close(&fhdl);
 			return false;
 		}
-		if (check_basic_fcb()) {
+		if (check_is_basic_fcb()) {
 			// BASIC header found
 			kc_file_type = TAP_BASIC_EXTRA_BLOCKS;
 			number_of_blocks--;
@@ -421,7 +415,7 @@ void send_file(FILINFO* Finfo) {
 			
 				if (select_key_pressed) {
 					select_key_pressed = false;
-					disp_err("SEND FILE","INTERRUPTED!");
+					disp_msg_p(PSTR("SEND FILE"),PSTR("INTERRUPTED!"));
 					f_close(&fhdl);
 					return;
 				}
@@ -435,11 +429,11 @@ void send_file(FILINFO* Finfo) {
 			}
 			// read the next block
 			if (disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
-				disp_err("ERROR","EOF too early!");
+				disp_msg_p(msg_error_str,PSTR("EOF too early!"));
 				break;
 			}
 			if (bytes_read != block_len) {
-				disp_err("ERROR:","Blk too short!");
+				disp_msg_p(msg_error_str,msg_block_too_short_str);
 				break;
 			}
 			// generate next blocknr if it doesnt come from the file

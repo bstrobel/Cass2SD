@@ -6,6 +6,7 @@
  */ 
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
+#include <stdbool.h>
 #include "../ff_avr/ff.h"
 #include "kc_cass_common.h"
 
@@ -25,4 +26,13 @@ uint8_t calculate_checksum() {
 		chksum += buf[i];
 	}
 	return chksum;
+}
+
+
+bool check_is_basic_fcb() {
+	KC_FCB_BASIC* fcb_basic = (KC_FCB_BASIC*) (buf + 1);
+	uint8_t b1 = fcb_basic->dateityp[0];
+	uint8_t b2 = fcb_basic->dateityp[1];
+	uint8_t b3 = fcb_basic->dateityp[2];
+	return ( b1 >= 0xd3 && b1 <= 0xd9 && b1 == b2 && b1 == b3);
 }
