@@ -71,5 +71,8 @@ typedef enum
 
 uint8_t calculate_checksum(void);
 bool check_is_basic_fcb(void);
+void disk_and_debounce_timer_init (void);
+void disk_and_debounce_timer_start(void);
+void disk_and_debounce_timer_stop(void);
 
 #endif /* KC_CASS_FORMAT_DEF_H_ */

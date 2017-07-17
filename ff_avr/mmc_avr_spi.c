@@ -12,33 +12,33 @@
 /-------------------------------------------------------------------------*/
 
 #include <avr/io.h>
+#include <avr/sfr_defs.h>
 #include <stdbool.h>
 #include "diskio.h"
 #include "mmc_avr.h"
 
-#define MMC_Write 		PORTB	//Port an der die MMC/SD-Karte angeschlossen ist also des SPI
+#define MMC_Write 		PORTB	//AVR SPI port
 #define MMC_Read 		PINB
 #define MMC_Direction_REG DDRB
-#define SPI_MISO 			4  //Port Pin an dem Data Output der MMC/SD-Karte angeschlossen ist
-#define SPI_MOSI    		3  //Port Pin an dem Data Input der MMC/SD-Karte angeschlossen ist
-#define SPI_Clock 			5  //Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk)
-#define SPI_SS    			2  //Port Pin an dem Chip Select der MMC/SD-Karte angeschlossen ist (CS)
+#define SPI_MISO 			PINB4  // pin 18
+#define SPI_MOSI    		PINB3  // pin 17
+#define SPI_Clock 			PINB5  // pin 19
+#define SPI_SS    			PINB2  // pin 16
 
 /* Peripheral controls (Platform dependent) */
-#define CS_LOW()			MMC_Write &= ~(1<<SPI_SS)	/* Set MMC_CS = low */
-#define	CS_HIGH()			MMC_Write |= (1<<SPI_SS)	/* Set MMC_CS = high */
+#define CS_LOW()			MMC_Write &= ~_BV(SPI_SS)	/* Set MMC_CS = low */
+#define	CS_HIGH()			MMC_Write |= _BV(SPI_SS)	/* Set MMC_CS = high */
 #define MMC_CD			true	/* Test if card detected.   yes:true, no:false, default:true */
 #define MMC_WP			false	/* Test if write protected. yes:true, no:false, default:false */
 #define	FCLK_SLOW()		{ \
-							MMC_Direction_REG &=~(1<<SPI_MISO);\
-							MMC_Direction_REG |= (1<<SPI_Clock);\
-							MMC_Direction_REG |= (1<<SPI_MOSI);\
-							MMC_Direction_REG |= (1<<SPI_SS);\
-							SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1);\
+							MMC_Direction_REG &=~_BV(SPI_MISO);\
+							MMC_Direction_REG |= (_BV(SPI_Clock) | _BV(SPI_MOSI) | _BV(SPI_SS));\
+							SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR0) | _BV(SPR1);\
+							SPSR = 0; \
 						}
 #define	FCLK_FAST()		{ \
-							SPCR &= ~((1<<SPR0) | (1<<SPR1));\
-							SPSR |= (1<<SPI2X);\
+							SPCR &= ~(_BV(SPR0) | _BV(SPR1));\
+							SPSR = _BV(SPI2X);\
 						} /* Set SPI clock for read/write (20MHz max) */
 
 
