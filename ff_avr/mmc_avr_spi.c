@@ -20,10 +20,15 @@
 #define MMC_Write 		PORTB	//AVR SPI port
 #define MMC_Read 		PINB
 #define MMC_Direction_REG DDRB
-#define SPI_MISO 			PINB4  // pin 18
-#define SPI_MOSI    		PINB3  // pin 17
-#define SPI_Clock 			PINB5  // pin 19
-#define SPI_SS    			PINB2  // pin 16
+#define SPI_MISO 		PINB4  // pin 18
+#define SPI_MOSI    	PINB3  // pin 17
+#define SPI_Clock 		PINB5  // pin 19
+#define SPI_SS    		PINB2  // pin 16
+
+#define SD_POWER_PORT	PORTB
+#define SD_POWER_DDR	DDRB
+#define SD_POWER_PIN	PORTB1 // pin 15 for ATMega328P
+
 
 /* Peripheral controls (Platform dependent) */
 #define CS_LOW()			MMC_Write &= ~_BV(SPI_SS)	/* Set MMC_CS = low */
@@ -33,7 +38,9 @@
 #define	FCLK_SLOW()		{ \
 							MMC_Direction_REG &=~_BV(SPI_MISO);\
 							MMC_Direction_REG |= (_BV(SPI_Clock) | _BV(SPI_MOSI) | _BV(SPI_SS));\
-							SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR0) | _BV(SPR1);\
+							MMC_Write &=~(_BV(SPI_MISO)) ;\
+							TCCR2A &= ~(_BV(COM2A0) | _BV(COM2A1));\
+							SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR1);\
 							SPSR = 0; \
 						}
 #define	FCLK_FAST()		{ \
@@ -93,12 +100,17 @@ BYTE CardType;			/* Card type flags (b0:MMC, b1:SDv1, b2:SDv2, b3:Block addressi
 static
 void power_on (void)
 {
+	SD_POWER_DDR |= _BV(SD_POWER_PIN);
+	SD_POWER_PORT &= ~_BV(SD_POWER_PIN);
+	for (Timer1 = 30; Timer1; );		/* Wait for 300ms */
 }
 
 
 static
 void power_off (void)
 {
+	SD_POWER_DDR |= _BV(SD_POWER_PIN);
+	SD_POWER_PORT |= _BV(SD_POWER_PIN);
 }
 
 
@@ -291,8 +303,14 @@ BYTE send_cmd (		/* Returns R1 resp (bit7==1:Send failed) */
 
 	/* Select the card and wait for ready except to stop multiple block read */
 	if (cmd != CMD12) {
-		deselect();
-		if (!select()) return 0xFF;
+		if (cmd == CMD0) {
+			CS_HIGH();
+			CS_LOW();		/* Set CS# low */
+		}
+		else {
+			deselect();
+			if (!select()) return 0xFF;
+		}
 	}
 
 	/* Send command packet */
@@ -335,12 +353,21 @@ DSTATUS mmc_disk_initialize (void)
 
 
 	power_off();						/* Turn off the socket power to reset the card */
-	for (Timer1 = 10; Timer1; ) ;		/* Wait for 100ms */
+	for (Timer1 = 10; Timer1; );		/* Wait for 100ms */
 	if (Stat & STA_NODISK) return Stat;	/* No card in the socket? */
 
 	power_on();							/* Turn on the socket power */
 	FCLK_SLOW();
 	for (n = 10; n; n--) xchg_spi(0xFF);	/* 80 dummy clocks */
+	//CS_LOW();
+	//xchg_spi(0x40);				/* Put the card SPI mode */
+	//xchg_spi(0x0);				/* Put the card SPI mode */
+	//xchg_spi(0x0);				/* Put the card SPI mode */
+	//xchg_spi(0x0);				/* Put the card SPI mode */
+	//xchg_spi(0x0);				/* Put the card SPI mode */
+	//xchg_spi(0x95);				/* Put the card SPI mode */
+	//xchg_spi(0xff);				/* Put the card SPI mode */
+	//CS_HIGH();
 
 	ty = 0;
 	if (send_cmd(CMD0, 0) == 1) {			/* Put the card SPI mode */

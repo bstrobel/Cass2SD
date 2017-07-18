@@ -143,36 +143,49 @@ static bool detect_block_len() {
 	bool first_block = true;
 	uint8_t last_blocknr = 0;
 	// Sweep through file and see if blocknumbers are consecutive
-	while (bytes_read > 0 || first_block) {
-		if (disp_fr_err(f_read(&fhdl, buf, 129, &bytes_read))) {
+	while (1) {
+		if (disp_fr_err(f_read(&fhdl, buf, BLOCK_LEN_WITH_BLOCKNUM, &bytes_read))) {
 			f_close(&fhdl);
 			return false;
 		}
+
+		if (bytes_read == BLOCK_LEN_WITHOUT_BLOCKNUM && first_block) {
+			block_len = BLOCK_LEN_WITHOUT_BLOCKNUM;
+			start_buf_ptr = buf + 1;
+			break;
+		}
+		else if (bytes_read == 0 && !first_block) {
+			break;
+		}
+		else if (bytes_read != BLOCK_LEN_WITH_BLOCKNUM && block_len == BLOCK_LEN_WITH_BLOCKNUM) {
+			// this shouldn't happen, this is an error!
+			f_close(&fhdl);
+			return false;
+		}
+
 		if (first_block) {
-			if (buf[0] < 2)
+			if (buf[0] < 2) {
 				// Normal files start with block=0, BASIC files with block=1
 				last_blocknr = buf[0];
+				start_buf_ptr = buf;
+				block_len = BLOCK_LEN_WITH_BLOCKNUM;
+			}
 			else {
 				// already the first blocknr is wrong, so we dont have blocknrs
 				start_buf_ptr = buf + 1;
-				block_len = 128;
+				block_len = BLOCK_LEN_WITHOUT_BLOCKNUM;
 				break;
 			}
+			first_block = false;
 		}
 		else {
-			if (buf[0] == last_blocknr + 1)
+			if (buf[0] == last_blocknr + 1 || buf[0] == 0xff) // 0xff blocks are allowed 
 				last_blocknr = buf[0];
+				// we have set start_buf_ptr and block_len in the first_block part already
 			else {
-				if (buf[0] != 0xff) {
-					// the last blocknr is always 0xff
-					start_buf_ptr = buf;
-					block_len = 129;
-				}
-				else {
-					// no consecutive blocknr -> we assume no blocknrs
-					start_buf_ptr = buf + 1;
-					block_len = 128;
-				}
+				// no consecutive blocknr -> we assume no blocknrs
+				start_buf_ptr = buf + 1;
+				block_len = BLOCK_LEN_WITHOUT_BLOCKNUM;
 				break;
 			}
 		}

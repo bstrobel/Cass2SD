@@ -26,12 +26,13 @@
 // f_Space=500Hz -> 2ms/2 => 1000µs
 // 1ms => 1000 ticks
 #define RECV_TIMER_TIMEOUT_CNT 64000U			// 64ms
+#define RECV_TIMER_ZERO_LOWER_THRESHOLD 175U	// 0.175ms
 #define RECV_TIMER_ZERO_UPPER_THRESHOLD 375U	// 0.375ms
 #define RECV_TIMER_ONE_UPPER_THRESHOLD 750U		// 0.75ms
 
 #define IS_SPACE(ctr) (ctr > RECV_TIMER_ONE_UPPER_THRESHOLD)
 #define IS_ONE(ctr) (ctr > RECV_TIMER_ZERO_UPPER_THRESHOLD && ctr <= RECV_TIMER_ONE_UPPER_THRESHOLD)
-#define IS_ZERO(ctr) (ctr <= RECV_TIMER_ZERO_UPPER_THRESHOLD)
+#define IS_ZERO(ctr) (ctr > RECV_TIMER_ZERO_LOWER_THRESHOLD && ctr <= RECV_TIMER_ZERO_UPPER_THRESHOLD)
 
 // Timer config
 // TIMSK1 = _BV(OCIE1A); // allow interrupts for OCR1A match
@@ -126,12 +127,13 @@ ISR(INT0_vect) {
 				vorton_cntr = 0;
 			}
 			else {
-				recv_byte >>= 1;
 				if (IS_ONE(cntr_val)) {
+					recv_byte >>= 1;
 					vorton_cntr++;
 					recv_byte |= 0x80;
 				}
-				else { // if (IS_ZERO(cntr_val))
+				else if (IS_ZERO(cntr_val)) {
+					recv_byte >>= 1;
 					vorton_cntr=0;
 				}
 			}
@@ -193,10 +195,9 @@ static void get_filename_from_fcb() {
 
 void kc_cass_recv_file_init() {
 	#ifdef DEBUG_RECV_TIMER
-	MONITOR_RECV_DDR |= (_BV(MONITOR_RECV_BIT1) | _BV(MONITOR_RECV_BIT2) | _BV(MONITOR_RECV_BIT3));
+	MONITOR_RECV_DDR |= (_BV(MONITOR_RECV_BIT1) | _BV(MONITOR_RECV_BIT2));
 	MONITOR_RECV_PIN1_LOW;
 	MONITOR_RECV_PIN2_LOW;
-	MONITOR_RECV_PIN3_LOW;
 	#endif
 	
 	CASS_IN_DDR &= ~_BV(CASS_IN_PIN); // Configure input pin as INPUT
@@ -224,9 +225,6 @@ bool kc_cass_handle_recv_file() {
 		_recv_state = recv_state;
 		recv_state = RECV_HANDLER_ACK;
 	}
-	#ifdef DEBUG_RECV_TIMER
-	MONITOR_RECV_PIN3_HIGH;
-	#endif
 	switch (_recv_state) {
 		case RECV_OVERRUN_OCCURED: {
 			if (is_receiving) {
@@ -326,8 +324,5 @@ bool kc_cass_handle_recv_file() {
 			break;
 		}
 	}
-	#ifdef DEBUG_RECV_TIMER
-	MONITOR_RECV_PIN3_LOW;
-	#endif
 	return is_receiving;
 }

@@ -95,24 +95,34 @@ int main(void)
 	sei();
 	disk_and_debounce_timer_init();
 
+	lcd_clrscr();
+	xprintf(PSTR("INITIALIZING"));
+	lcd_gotoxy(0,1);
+	xprintf(PSTR("SD CARD"));
 	// mount the SD card
-	do 
 	{
-		disp_msg_p(PSTR("INITIALIZING"),PSTR("SD CARD"));
-		_delay_ms(500);
-		fr = f_mount(&FatFs, "", 1);
-		if (fr != FR_OK)
+		char chars[4] = {'-','+','|','#'};
+		uint8_t i = 0;
+		do
 		{
-			if (fr == FR_NOT_READY) {
-				disp_msg_p(PSTR("SD CARD"),PSTR("NOT READY"));
-			}
-			else {
-				disp_fr_err(fr);
-			
+			fr = f_mount(&FatFs, "", 1);
+			if (fr != FR_OK)
+			{
+				if (fr == FR_NOT_READY) {
+					lcd_gotoxy(15,1);
+					lcd_putc(chars[i++]);
+					if (i > 3) {
+						i=0;
+					}
+				}
+				else {
+					disp_fr_err(fr);
+				
+				}
 			}
 		}
-	} 
-	while (fr != FR_OK);
+		while (fr != FR_OK);
+	}
 	
 	kc_cass_send_file_init();
 	kc_cass_recv_file_init();

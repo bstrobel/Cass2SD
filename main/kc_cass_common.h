@@ -24,6 +24,9 @@ extern FIL fhdl;
 #define DATA_BUF_SIZE 130
 extern uint8_t buf[];
 
+#define BLOCK_LEN_WITH_BLOCKNUM 129
+#define BLOCK_LEN_WITHOUT_BLOCKNUM 128
+
 typedef enum {SPACE=0, ONE, ZERO} BIT_TYPE;
 
 extern const char tap_header_str[] PROGMEM;
