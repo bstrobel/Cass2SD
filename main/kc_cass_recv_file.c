@@ -77,7 +77,7 @@ char file_name_on_disk[LEN_DATEINAME + 1 + LEN_DATEITYP + 1]; // contains 8byte 
 char file_type[LEN_DATEITYP + 1]; // 3byte + 0x00byte
 const char msg_info_saved_str[] PROGMEM = "INFO: FILE SAVED";
 
-volatile bool is_time_measure_running = false; // if true ISR(INT0_vect) starts a new time measurement
+volatile bool is_time_measure_running = false; // if false ISR(INT0_vect) starts a new time measurement
 volatile uint8_t recv_byte = 0;
 volatile uint8_t block_cntr = 0;
 volatile uint16_t vorton_cntr = 0;
@@ -255,6 +255,7 @@ bool kc_cass_handle_recv_file() {
 					recv_byte = 0;
 				}
 				else if (buf_idx == MAX_BUF_IDX) { // block completely received
+					UINT bytes_written = 0;
 					if (recv_byte != calculate_checksum()) {
 						reset_recv_state();
 						f_close(&fhdl);
@@ -269,6 +270,7 @@ bool kc_cass_handle_recv_file() {
 					if (block_cntr == 0) { // first block
 						f_close(&fhdl); // just to be sure
 						get_filename_from_fcb();
+						
 						fr = f_open(&fhdl, file_name_on_disk, FA_WRITE | FA_CREATE_ALWAYS);
 						if (fr != FR_OK) {
 							reset_recv_state();
@@ -278,12 +280,25 @@ bool kc_cass_handle_recv_file() {
 							break;
 						}
 						display_recvinfo(file_name_on_disk,buf[0]);
+						
+						char lbuf[TAP_HEADER_LEN]; //we skip the final 0x0
+						strncpy_P(lbuf,tap_header_str,TAP_HEADER_LEN);
+						
+						fr = f_write(&fhdl,lbuf, TAP_HEADER_LEN, &bytes_written);
+						if (fr != FR_OK || bytes_written != TAP_HEADER_LEN) {
+							reset_recv_state();
+							f_close(&fhdl);
+							if (fr != FR_OK) {
+								disp_fr_err(fr);
+							}
+							disp_msg_p(msg_error_str,PSTR("WRITE FILE HDR"));
+							break;
+						}
 					}
 					else {
 						display_upd_recvinfo(buf[0]);
 					}
 
-					UINT bytes_written = 0;
 					fr = f_write(&fhdl, buf, DISK_BLOCK_SIZE, &bytes_written);
 					if (fr != FR_OK || bytes_written != DISK_BLOCK_SIZE) {
 						reset_recv_state();
