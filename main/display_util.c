@@ -13,8 +13,9 @@
 #include "../ff_avr/ff.h"
 #include "../ff_avr/xitoa.h"
 #include "../lcd/lcd.h"
-#include "display_util.h"
+#include "kc_cass_common.h"
 #include "debounced_keys.h"
+#include "display_util.h"
 
 const char dotdotdir_str[] PROGMEM = ".. [GO UP]";
 const char dir_str[] PROGMEM = "[DIR]";
@@ -25,8 +26,48 @@ const char pct_X_str[] PROGMEM = "0x%02X 0x%02X 0x%02X";
 const char msg_error_str[] PROGMEM = "ERROR";
 const char msg_info_str[] PROGMEM = "INFO";
 
-char dir_name[DIR_NAME_SIZE]; // 8 char name, 1 char dot, 3 char ext, \0 byte
-int16_t dir_idx = 0;
+void display_prev()
+{
+	if (dir_idx > 0)
+	{
+		dir_idx--;
+		f_closedir(&Dir);
+		if (dir_idx >= DIR_IDX_FIRST_FILE)
+		{
+			// FAT lib doesn't provide a way to go backwards through the list of files
+			// So we close the dir and reopen it and flip through until the new dir_idx
+			f_opendir(&Dir,".");
+			for (int16_t i=DIR_IDX_FIRST_FILE; i<=dir_idx; i++)
+			{
+				f_readdir(&Dir,&Finfo);
+			}
+		}
+		display_fileinfo(&Finfo);
+	}
+
+}
+
+void display_next()
+{
+	if (dir_idx < INT16_MAX)
+	{
+		dir_idx++;
+		if (dir_idx == DIR_IDX_FIRST_FILE)
+		{
+			f_opendir(&Dir,".");
+		}
+		if (dir_idx >= DIR_IDX_FIRST_FILE)
+		{
+			f_readdir(&Dir,&Finfo);
+			if (!Finfo.fname[0])
+			{
+				display_prev(); // We're over the edge, step back!
+				return;
+			}
+		}
+	}
+	display_fileinfo(&Finfo);
+}
 
 bool disp_fr_err(FRESULT r) {
 	if (r != FR_OK) {
@@ -134,17 +175,17 @@ void display_upd_sendinfo(uint8_t blocknr)
 	xprintf(PSTR("%03d"),blocknr);
 }
 
-void display_recvinfo(char* filename, uint8_t blocknr) {
+void display_recvinfo(char* filename, uint8_t blocknr, char* filetype) {
 	lcd_clrscr();
 	if (filename == NULL) {
 		xprintf(PSTR("RCV:????????.???"));
 		lcd_gotoxy(0,1);
-		xprintf(PSTR("#???"));
+		xprintf(PSTR("#??? TYPE:???"));
 	}
 	else {
 		xprintf(PSTR("RCV:%s"),filename);
 		lcd_gotoxy(0,1);
-		xprintf(PSTR("#%03d"),blocknr);
+		xprintf(PSTR("#%03d TYPE:%s"),blocknr,filetype);
 	}
 }
 

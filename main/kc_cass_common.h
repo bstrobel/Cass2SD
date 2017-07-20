@@ -21,6 +21,13 @@ extern FATFS FatFs;		/* File system object for each logical drive */
 extern FIL fhdl;
 
 
+
+#define DIR_IDX_GO_UP 0
+#define DIR_IDX_FIRST_FILE DIR_IDX_GO_UP + 1
+#define DIR_NAME_SIZE 13
+extern char dir_name[]; // 8 char name, 1 char dot, 3 char ext, \0 byte
+extern int16_t dir_idx;
+
 #define DATA_BUF_SIZE 130
 extern uint8_t buf[];
 

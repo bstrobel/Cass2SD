@@ -11,10 +11,11 @@
 #include "../ff_avr/diskio.h"
 #include "../lcd/lcd.h"
 
-#include "kc_cass_send_file.h"
 #include "kc_cass_common.h"
 #include "display_util.h"
 #include "debounced_keys.h"
+#include "kc_cass_recv_file.h"
+#include "kc_cass_send_file.h"
 
 const char msg_block_too_short_str[] PROGMEM = "BLOCK TOO SHORT!";
 
@@ -399,6 +400,7 @@ static bool load_first_block_and_check_type(FILINFO* Finfo) {
 }
 
 void send_file(FILINFO* Finfo) {
+	kc_cass_recv_file_disable();
 	select_key_pressed = false;
 	uint8_t current_block = 1;
 	if (load_first_block_and_check_type(Finfo)) {
@@ -463,4 +465,7 @@ void send_file(FILINFO* Finfo) {
 		}
 		f_close(&fhdl);
 	}
+	display_fileinfo(Finfo);
+	while(send_state!=DONE);
+	kc_cass_recv_file_init();
 }

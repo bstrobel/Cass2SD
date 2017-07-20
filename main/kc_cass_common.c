@@ -20,6 +20,9 @@ FRESULT fr;
 FATFS FatFs;		/* File system object for each logical drive */
 FIL fhdl;
 
+char dir_name[DIR_NAME_SIZE]; // 8 char name, 1 char dot, 3 char ext, \0 byte
+int16_t dir_idx = 0;
+
 const char tap_header_str[] PROGMEM = "\xc3KC-TAPE by AF. ";
 
 uint8_t buf[DATA_BUF_SIZE]; //send buffer

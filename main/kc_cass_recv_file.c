@@ -15,10 +15,11 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "kc_cass_common.h"
+#include "kc_cass_send_file.h"
 #include "display_util.h"
-#include "kc_cass_recv_file.h"
 #include "../ff_avr/xitoa.h"
 #include "../lcd/lcd.h"
+#include "kc_cass_recv_file.h"
 
 // Clock_Timer1(Prescaler=8MHz/8=1MHz -> 1 tick = 1µs
 // f_One=1000Hz -> 1ms/2 => 500µs
@@ -58,6 +59,8 @@
 
 #define MIN_ONE_BITS_IN_VORTON 9U
 #define IS_VORTON(ctr) (ctr >= MIN_ONE_BITS_IN_VORTON)
+#define MIN_SPACE_CNT_FOR_SENDFILE 100U
+#define IS_START_SENDFILE(ctr) (ctr >= MIN_SPACE_CNT_FOR_SENDFILE)
 
 #define DISK_BLOCK_SIZE (DATA_BUF_SIZE - 1)
 #define MAX_BUF_IDX (DATA_BUF_SIZE - 1)
@@ -67,7 +70,8 @@ typedef enum {
 	RECV_BYTE_READY, 
 	RECV_BIT_TIMEOUT, 
 	RECV_HANDLER_ACK, 
-	RECV_OVERRUN_OCCURED
+	RECV_OVERRUN_OCCURED,
+	RECV_START_SENDFILE
 } recv_state_enum;
 volatile recv_state_enum recv_state = RECV_HANDLER_ACK;
 
@@ -81,6 +85,7 @@ volatile bool is_time_measure_running = false; // if false ISR(INT0_vect) starts
 volatile uint8_t recv_byte = 0;
 volatile uint8_t block_cntr = 0;
 volatile uint16_t vorton_cntr = 0;
+volatile uint16_t space_cntr = 0;
 volatile uint16_t cntr_val = 0;
 
 static void reset_recv_state() {
@@ -118,27 +123,38 @@ ISR(INT0_vect) {
 		}
 		else {
 			if (IS_SPACE(cntr_val)) {
-				if (IS_VORTON(vorton_cntr)) {
-					recv_state = RECV_VORTON_DETECTED;
+				if (IS_START_SENDFILE(space_cntr)) {
+					recv_state = RECV_START_SENDFILE;
+					space_cntr = 0;
 				}
 				else {
-					recv_state = RECV_BYTE_READY;
+					space_cntr++;
+					if (IS_VORTON(vorton_cntr)) {
+						recv_state = RECV_VORTON_DETECTED;
+					}
+					else {
+						recv_state = RECV_BYTE_READY;
+					}
 				}
 				vorton_cntr = 0;
+				is_time_measure_running = false;
 			}
-			else {
-				if (IS_ONE(cntr_val)) {
-					recv_byte >>= 1;
-					vorton_cntr++;
-					recv_byte |= 0x80;
-				}
-				else if (IS_ZERO(cntr_val)) {
-					recv_byte >>= 1;
-					vorton_cntr=0;
-				}
+			else if (IS_ONE(cntr_val)) {
+				recv_byte >>= 1;
+				vorton_cntr++;
+				space_cntr = 0;
+				recv_byte |= 0x80;
+				is_time_measure_running = false;
 			}
+			else if (IS_ZERO(cntr_val)) {
+				recv_byte >>= 1;
+				vorton_cntr=0;
+				space_cntr=0;
+				is_time_measure_running = false;
+			}
+			// If we don't recognize one of the signals, we ignore it
+			// this is done to filter out noise
 		}
-		is_time_measure_running = false;
 	}
 	else {
 		// initialize and start timer
@@ -213,7 +229,7 @@ void kc_cass_recv_file_init() {
 void kc_cass_recv_file_disable() {
 	EIMSK &= ~_BV(INT0); // make sure INT0 pin interrupts are disabled
 	CASS_IN_DDR &= ~_BV(CASS_IN_PIN); // Configure input pin as INPUT
-	CASS_IN_PORT |= _BV(CASS_IN_PIN); // Enable pullup
+	reset_recv_state();
 }
 
 /************************************************************************/
@@ -240,7 +256,7 @@ bool kc_cass_handle_recv_file() {
 			if (!is_receiving) {
 				is_receiving = true;
 				block_cntr = 0;
-				display_recvinfo(NULL,0);
+				display_recvinfo(NULL,0,NULL);
 			}
 			break;
 		}
@@ -279,7 +295,7 @@ bool kc_cass_handle_recv_file() {
 							disp_msg_p(msg_error_str,PSTR("OPEN FOR WRITE"));
 							break;
 						}
-						display_recvinfo(file_name_on_disk,buf[0]);
+						display_recvinfo(file_name_on_disk,buf[0],file_type);
 						
 						char lbuf[TAP_HEADER_LEN]; //we skip the final 0x0
 						strncpy_P(lbuf,tap_header_str,TAP_HEADER_LEN);
@@ -332,6 +348,10 @@ bool kc_cass_handle_recv_file() {
 				f_close(&fhdl);
 				disp_msg_p(msg_info_saved_str,PSTR(""));
 			}
+			break;
+		}
+		case RECV_START_SENDFILE: {
+			send_file(&Finfo);
 			break;
 		}
 		default:
