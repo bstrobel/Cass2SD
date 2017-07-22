@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 #ifndef DEBOUNCE_COUNTER_MAX
-#	define DEBOUNCE_COUNTER_MAX 20U
+#	define DEBOUNCE_COUNTER_MAX 10U
 #endif
 
 #define PORT_ID_PORTA 0

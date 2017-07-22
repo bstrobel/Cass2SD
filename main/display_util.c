@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <string.h>
 #include "../ff_avr/ff.h"
 #include "../ff_avr/xitoa.h"
 #include "../lcd/lcd.h"
@@ -25,18 +26,28 @@ const char pct_d_str[] PROGMEM = "%d";
 const char pct_X_str[] PROGMEM = "0x%02X 0x%02X 0x%02X";
 const char msg_error_str[] PROGMEM = "ERROR";
 const char msg_info_str[] PROGMEM = "INFO";
+const char vol_name_str[] PROGMEM = "VOL:%s";
+//     BYTE    fs_type;      /* FAT type (0, FS_FAT12, FS_FAT16, FS_FAT32 or FS_EXFAT) */
+const char vol_free_str_unknown[] PROGMEM = "FR:%d.%dGB";
+const char vol_free_str_FS_FAT12[] PROGMEM = "FAT12 FR:%dMB";
+const char vol_free_str_FS_FAT16[] PROGMEM = "FAT16 FR:%dMB";
+const char vol_free_str_FS_FAT32[] PROGMEM = "FAT32 FR:%dMB";
+const char vol_free_str_FS_EXFAT[] PROGMEM = "EXFAT FR:%dMB";
+
+#define MAX_PATH_LENGTH 64
+char dir_name[DIR_NAME_SIZE]; // 8 char name, 1 char dot, 3 char ext, \0 byte
+int16_t dir_idx = 0;
 
 void display_prev()
 {
 	if (dir_idx > 0)
 	{
 		dir_idx--;
-		f_closedir(&Dir);
 		if (dir_idx >= DIR_IDX_FIRST_FILE)
 		{
 			// FAT lib doesn't provide a way to go backwards through the list of files
 			// So we close the dir and reopen it and flip through until the new dir_idx
-			f_opendir(&Dir,".");
+			f_readdir(&Dir,NULL); // rewinds to first item
 			for (int16_t i=DIR_IDX_FIRST_FILE; i<=dir_idx; i++)
 			{
 				f_readdir(&Dir,&Finfo);
@@ -52,21 +63,41 @@ void display_next()
 	if (dir_idx < INT16_MAX)
 	{
 		dir_idx++;
-		if (dir_idx == DIR_IDX_FIRST_FILE)
-		{
-			f_opendir(&Dir,".");
+		if (dir_idx == DIR_IDX_GO_UP) {
+			f_readdir(&Dir,NULL); // "rewind" to the start of Dir 
 		}
-		if (dir_idx >= DIR_IDX_FIRST_FILE)
-		{
+		else if (dir_idx >= DIR_IDX_FIRST_FILE) {
 			f_readdir(&Dir,&Finfo);
-			if (!Finfo.fname[0])
-			{
+			if (!Finfo.fname[0]) {
 				display_prev(); // We're over the edge, step back!
 				return;
 			}
 		}
 	}
 	display_fileinfo(&Finfo);
+}
+
+void display_by_name(char* name, bool is_dir) {
+	f_readdir(&Dir,NULL); // rewinds to first item
+	for (dir_idx = DIR_IDX_FIRST_FILE;dir_idx <= INT16_MAX; dir_idx++) {
+		f_readdir(&Dir,&Finfo);
+		if (!Finfo.fname[0])
+		{
+			dir_idx=-1;
+			display_next(); // not found, show beginning
+			return;			
+		}
+		if (!strcmp(Finfo.fname,name)) {
+			if ((Finfo.fattrib & AM_DIR) && is_dir) {
+				display_fileinfo(&Finfo);
+				return;
+			}
+			if (!(Finfo.fattrib & AM_DIR) && !is_dir) {
+				display_fileinfo(&Finfo);
+				return;
+			}
+		}
+	}
 }
 
 bool disp_fr_err(FRESULT r) {
@@ -107,9 +138,47 @@ void display_fileinfo(FILINFO* Finfo)
 	{
 		case DIR_IDX_GO_UP:
 		{
-			xprintf(pct_s_str, dir_name);
-			lcd_gotoxy(0,1);
-			xprintf(dotdotdir_str);
+			if (dir_name[0]) { // sub dir
+				xprintf(pct_s_str, dir_name);
+				lcd_gotoxy(0,1);
+				xprintf(dotdotdir_str);
+			}
+			else { // root dir
+				char label[24];
+				f_getlabel("",label,NULL);
+				xprintf(vol_name_str, label);
+				lcd_gotoxy(0,1);
+				FATFS* fs;
+				DWORD free_clusters;
+				f_getfree("",&free_clusters,&fs);
+				#if _MAX_SS != _MIN_SS
+				DWORD free_mbytes = free_clusters * FatFs.csize * FatFs.ssize / (1024UL * 1024UL);
+				#else
+				DWORD free_mbytes = free_clusters * FatFs.csize * _MAX_SS / (1024UL * 1024UL);
+				#endif
+				switch (FatFs.fs_type) {
+					case FS_EXFAT: {
+						xprintf(vol_free_str_FS_EXFAT,free_mbytes);
+						break;
+					}
+					case FS_FAT12: {
+						xprintf(vol_free_str_FS_FAT12,free_mbytes);
+						break;
+					}
+					case FS_FAT16: {
+						xprintf(vol_free_str_FS_FAT16,free_mbytes);
+						break;
+					}
+					case FS_FAT32: {
+						xprintf(vol_free_str_FS_FAT32,free_mbytes);
+						break;
+					}
+					default: {
+						xprintf(vol_free_str_unknown,free_mbytes);
+						break;
+					}
+				}
+			}
 			break;
 		}
 		default:
@@ -226,6 +295,20 @@ void disp_msg_p(const char* PROGMEM line1, const char* PROGMEM line2) {
 	lcd_gotoxy(0,1);
 	xprintf(line2);
 	_delay_ms(ERROR_DISP_MILLIS);
+}
+
+void disp_util_fill_dir_name() {
+	char cwd[MAX_PATH_LENGTH];
+	f_getcwd(cwd, DIR_NAME_SIZE);
+	uint8_t str_end = 0;
+	for (str_end=0;str_end < DIR_NAME_SIZE && cwd[str_end]; str_end++);
+	for (uint8_t i = str_end - 1; i>=0; i--) {
+		if (cwd[i] == '/') {
+			strlcpy(dir_name,cwd+i+1,DIR_NAME_SIZE);
+			break;
+		}
+	}
+	
 }
 
 #ifdef DEBUG

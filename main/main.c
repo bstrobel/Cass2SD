@@ -85,7 +85,8 @@ int main(void)
 	kc_cass_recv_file_init();
 	
 	// initialize the menu system and display greeting
-	f_getcwd(dir_name,DIR_NAME_SIZE);
+	f_opendir(&Dir,"/");
+	disp_util_fill_dir_name();
 	dir_idx = -1;
 	display_next();
 	
@@ -114,10 +115,11 @@ int main(void)
 			{
 				case DIR_IDX_GO_UP:
 				{
+					disp_util_fill_dir_name();
 					f_chdir("..");
-					f_getcwd(dir_name, DIR_NAME_SIZE);
-					dir_idx = -1;
-					display_next();
+					f_opendir(&Dir,".");
+					display_by_name(dir_name, true);
+					disp_util_fill_dir_name();
 					break;
 				}
 				default:
@@ -125,7 +127,8 @@ int main(void)
 					if (Finfo.fattrib & AM_DIR)
 					{
 						f_chdir(Finfo.fname);
-						f_getcwd(dir_name, DIR_NAME_SIZE);
+						disp_util_fill_dir_name();
+						f_opendir(&Dir,".");
 						dir_idx = -1;
 						display_next();
 					}

@@ -347,6 +347,7 @@ bool kc_cass_handle_recv_file() {
 				reset_recv_state();
 				f_close(&fhdl);
 				disp_msg_p(msg_info_saved_str,PSTR(""));
+				display_by_name(file_name_on_disk, false);
 			}
 			break;
 		}
