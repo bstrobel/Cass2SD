@@ -22,17 +22,24 @@ const char dotdotdir_str[] PROGMEM = ".. [GO UP]";
 const char dir_str[] PROGMEM = "[DIR]";
 const char empty_dir_str[] PROGMEM = "[Empty Dir]";
 const char pct_s_str[] PROGMEM = "%s";
-const char pct_d_str[] PROGMEM = "%d";
+const char pct_u_str[] PROGMEM = "%lu";
 const char pct_X_str[] PROGMEM = "0x%02X 0x%02X 0x%02X";
 const char msg_error_str[] PROGMEM = "ERROR";
 const char msg_info_str[] PROGMEM = "INFO";
 const char msg_block_too_short_str[] PROGMEM = "BLOCK TOO SHORT!";
 const char vol_name_str[] PROGMEM = "VOL:%s";
-const char vol_free_str_unknown[] PROGMEM = "FR:%d.%dGB";
-const char vol_free_str_FS_FAT12[] PROGMEM = "FAT12 FR:%dMB";
-const char vol_free_str_FS_FAT16[] PROGMEM = "FAT16 FR:%dMB";
-const char vol_free_str_FS_FAT32[] PROGMEM = "FAT32 FR:%dMB";
-const char vol_free_str_FS_EXFAT[] PROGMEM = "EXFAT FR:%dMB";
+const char vol_free_str_unknown[] PROGMEM = "FR:%luMB";
+const char vol_free_str_FS_FAT12[] PROGMEM = "FAT12 FR:%luMB";
+const char vol_free_str_FS_FAT16[] PROGMEM = "FAT16 FR:%luMB";
+const char vol_free_str_FS_FAT32[] PROGMEM = "FAT32 FR:%luMB";
+const char vol_free_str_FS_EXFAT[] PROGMEM = "EXFAT FR:%luMB";
+const char file_type_str_B_NOHD[] PROGMEM ="B_NOHD";
+const char file_type_str_B_WHDR[] PROGMEM ="B_WHDR";
+const char file_type_str_OTHER[] PROGMEM ="OTHER";
+const char file_type_str_TAP_MC[] PROGMEM ="TAP";
+const char file_type_str_TAP_B[] PROGMEM ="TAP_B";
+const char file_type_str_TAP_BX[] PROGMEM ="TAP_BX";
+const char file_type_str_RAW[] PROGMEM ="RAW";
 
 #define MAX_PATH_LENGTH 64
 char dir_name[DIR_NAME_SIZE]; // 8 char name, 1 char dot, 3 char ext, \0 byte
@@ -198,7 +205,7 @@ void display_fileinfo(FILINFO* Finfo)
 				}
 				else
 				{
-					xprintf(pct_d_str, Finfo->fsize);
+					xprintf(pct_u_str, Finfo->fsize);
 				}
 			}
 			break;
@@ -211,33 +218,40 @@ void display_sendinfo(char* filename, uint8_t block_len, uint8_t num_blocks, KC_
 	lcd_clrscr();
 	xprintf(PSTR("SND:%s"),filename);
 	lcd_gotoxy(0,1);
-	char* t;
+	PGM_P t;
 	switch(file_type)
 	{
-		case BASIC_NO_HEADER:
-			t="B_NOHD";
+		case BASIC_NO_HEADER: {
+			t=file_type_str_B_NOHD;
 			break;
-		case BASIC_W_HEADER:
-			t="B_WHDR";
+		}
+		case BASIC_W_HEADER: {
+			t=file_type_str_B_WHDR;
 			break;
-		case OTHER_THAN_BASIC:
-			t="OTHER";
+		}
+		case OTHER_THAN_BASIC: {
+			t=file_type_str_OTHER;
 			break;
-		case TAP:
-			t="TAP_MC";
+		}
+		case TAP: {
+			t=file_type_str_TAP_MC;
 			break;
-		case TAP_BASIC:
-			t="TAP_B";
+		}
+		case TAP_BASIC: {
+			t=file_type_str_TAP_B;
 			break;
-		case TAP_BASIC_EXTRA_BLOCKS:
-			t="TAP_BX";
+		}
+		case TAP_BASIC_EXTRA_BLOCKS: {
+			t=file_type_str_TAP_BX;
 			break;
+		}
 		default:
-		case RAW:
-			t="RAW";
+		case RAW: {
+			t=file_type_str_RAW;
 			break;
+		}
 	}
-	xprintf(PSTR("#XXX/%03d%c %s"),num_blocks,block_len==128?'!':' ', t);
+	xprintf(PSTR("#XXX/%03d%c %S"),num_blocks,block_len==128?'!':' ', t);
 }
 
 void display_upd_sendinfo(uint8_t blocknr)
@@ -308,7 +322,7 @@ void display_file_details() {
 			strlcpy(filename,fcb->dateiname,LEN_FILENAME);
 			strlcpy(fileext,fcb->dateityp,LEN_FILETYPE);
 		}
-		else {
+		else { // no header -> get info from filename
 			char* ext = strchr(Finfo.fname,'.');
 			char* src = Finfo.fname;
 			char* dst = filename;
@@ -331,40 +345,40 @@ void display_file_details() {
 		}
 		xprintf(PSTR("%s [%s]"),filename, fileext);
 		lcd_gotoxy(0,1);
-		char* t;
+		PGM_P t;
 		switch(kc_file_type)
 		{
 			case BASIC_NO_HEADER: {
-				t="B_NOHD";
+				t=file_type_str_B_NOHD;
 				break;
 			}
 			case BASIC_W_HEADER: {
-				t="B_WHDR";
+				t=file_type_str_B_WHDR;
 				break;
 			}
 			case OTHER_THAN_BASIC: {
-				t="MC";
+				t=file_type_str_OTHER;
 				break;
 			}
 			case TAP: {
-				t="TAP";
+				t=file_type_str_TAP_MC;
 				break;
 			}
 			case TAP_BASIC: {
-				t="TAP_B";
+				t=file_type_str_TAP_B;
 				break;
 			}
 			case TAP_BASIC_EXTRA_BLOCKS: {
-				t="TAP_BX";
+				t=file_type_str_TAP_BX;
 				break;
 			}
 			default:
 			case RAW: {
-				t="RAW";
+				t=file_type_str_RAW;
 				break;
 			}
 		}
-		xprintf(PSTR("#%03d%c %s"),number_of_blocks,block_len==128?'!':' ', t);
+		xprintf(PSTR("#%03d%c %S"),number_of_blocks,block_len==128?'!':' ', t);
 	}
 	is_file_details_displayed = true;
 }

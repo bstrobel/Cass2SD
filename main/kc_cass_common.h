@@ -117,7 +117,5 @@ typedef struct
 uint8_t calculate_checksum(void);
 bool check_is_basic_fcb(void);
 void disk_and_debounce_timer_init (void);
-void disk_and_debounce_timer_start(void);
-void disk_and_debounce_timer_stop(void);
 bool load_first_block_and_check_type(FILINFO* Finfo);
 #endif /* KC_CASS_FORMAT_DEF_H_ */
