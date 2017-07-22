@@ -9,9 +9,14 @@
 #include <avr/interrupt.h>
 #include <avr/sfr_defs.h>
 #include <stdbool.h>
+#include <string.h>
+#include <util/delay.h>
 #include "../ff_avr/ff.h"
 #include "../ff_avr/diskio.h"
+#include "../ff_avr/xitoa.h"
+#include "../lcd/lcd.h"
 #include "debounced_keys.h"
+#include "display_util.h"
 #include "kc_cass_common.h"
 
 DIR Dir;			/* http://elm-chan.org/fsw/ff/doc/sdir.html */
@@ -20,9 +25,19 @@ FRESULT fr;
 FATFS FatFs;		/* File system object for each logical drive */
 FIL fhdl;
 
+uint16_t disp_timer = 0;
+bool is_file_details_displayed = false;
+
+uint8_t* start_buf_ptr = buf;
+uint8_t block_len = 128;
+KC_FILE_TYPE kc_file_type = RAW;
+uint8_t number_of_blocks = 0;
+
+SYSTEM_STATE system_state = IDLE;
+
 const char tap_header_str[] PROGMEM = "\xc3KC-TAPE by AF. ";
 
-uint8_t buf[DATA_BUF_SIZE]; //send buffer
+uint8_t buf[DATA_BUF_SIZE]; //send and receive buffer
 
 /*---------------------------------------------------------*/
 /* disk_and_debounce_timer                                 */
@@ -65,6 +80,7 @@ ISR(TIMER2_COMPA_vect)
 		}
 	}
 	handle_keys();
+	disp_timer++;
 }
 
 void disk_and_debounce_timer_init (void)
@@ -103,4 +119,282 @@ bool check_is_basic_fcb() {
 	uint8_t b2 = fcb_basic->dateityp[1];
 	uint8_t b3 = fcb_basic->dateityp[2];
 	return ( b1 >= 0xd3 && b1 <= 0xd9 && b1 == b2 && b1 == b3);
+}
+
+/************************************************************************/
+/* Scans the file and checks if there are consecutive blocknrs          */
+/* sets block_len=128, start_buf_prt = buf+1 if file has no blocknrs    */
+/* sets block_len=129, start_buf_prt = buf if file provides blocknrs    */
+/************************************************************************/
+static bool detect_block_len() {
+	// rewind to start of file
+	if (disp_fr_err(f_lseek(&fhdl, 0))) {
+		f_close(&fhdl);
+		return false;
+	}
+
+	bool first_block = true;
+	uint8_t last_blocknr = 0;
+	UINT bytes_read;
+	// Sweep through file and see if blocknumbers are consecutive
+	while (1) {
+		if (disp_fr_err(f_read(&fhdl, buf, BLOCK_LEN_WITH_BLOCKNUM, &bytes_read))) {
+			f_close(&fhdl);
+			return false;
+		}
+
+		if (bytes_read == BLOCK_LEN_WITHOUT_BLOCKNUM && first_block) {
+			block_len = BLOCK_LEN_WITHOUT_BLOCKNUM;
+			start_buf_ptr = buf + 1;
+			break;
+		}
+		else if (bytes_read == 0 && !first_block) {
+			break;
+		}
+		else if (bytes_read != BLOCK_LEN_WITH_BLOCKNUM && block_len == BLOCK_LEN_WITH_BLOCKNUM) {
+			// this shouldn't happen, this is an error!
+			f_close(&fhdl);
+			return false;
+		}
+
+		if (first_block) {
+			if (buf[0] < 2) {
+				// Normal files start with block=0, BASIC files with block=1
+				last_blocknr = buf[0];
+				start_buf_ptr = buf;
+				block_len = BLOCK_LEN_WITH_BLOCKNUM;
+			}
+			else {
+				// already the first blocknr is wrong, so we dont have blocknrs
+				start_buf_ptr = buf + 1;
+				block_len = BLOCK_LEN_WITHOUT_BLOCKNUM;
+				break;
+			}
+			first_block = false;
+		}
+		else {
+			if (buf[0] == last_blocknr + 1 || buf[0] == 0xff) // 0xff blocks are allowed
+			last_blocknr = buf[0];
+			// we have set start_buf_ptr and block_len in the first_block part already
+			else {
+				// no consecutive blocknr -> we assume no blocknrs
+				start_buf_ptr = buf + 1;
+				block_len = BLOCK_LEN_WITHOUT_BLOCKNUM;
+				break;
+			}
+		}
+
+	}
+	// rewind again
+	if (disp_fr_err(f_lseek(&fhdl, 0))) {
+		f_close(&fhdl);
+		return false;
+	}
+	return true;
+}
+
+static bool check_non_tap_types(FILINFO* Finfo) {
+	// non-TAP files may have the block numbers in the file or not
+	// this determines the block_len:
+	//  129 with blocknr
+	//  128 without blocknr
+	if(!detect_block_len()) {
+		return false;
+	}
+
+	// load the first block completely
+	// start_buf_ptr and block_len are now correct
+	UINT bytes_read;
+	if (disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
+		f_close(&fhdl);
+		return false;
+	}
+
+	// check if BASIC FCB
+	if (check_is_basic_fcb()) {
+		// BASIC FCB found
+		kc_file_type = BASIC_W_HEADER;
+		number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
+		if (HAS_NO_BLOCKNR) {
+			buf[0] = 1; // BASIC files start with block #1
+		}
+		return true;
+	}
+
+	// check the file extension if it is of BASIC type ('SSS','TTT',...)
+	char* ext = strchr(Finfo->fname,'.') + 1;
+	for (uint8_t c = 0x53; c <= 0x59; c++) { // stepping through from 'S' to 'Y'
+		if (ext[0] == c && ext[1] == c && ext[2] == c) {
+			kc_file_type = BASIC_NO_HEADER; // -> we found a BASIC file ext.
+			// Create the BASIC FCB
+			start_buf_ptr[0] = c + 0x80; // set the magic 3 letter header (0xd3d3d3, 0xd4d4d4, ...)
+			start_buf_ptr[1] = c + 0x80;
+			start_buf_ptr[2] = c + 0x80;
+			// Copy the filename in the header
+			for (uint8_t i=0; i < 8; i++) {
+				if (Finfo->fname + i < (ext - 1)) {
+					start_buf_ptr[i+3] = Finfo->fname[i];
+				}
+				else {
+					start_buf_ptr[i+3] = 0x20;
+				}
+			}
+			// reload the file contents after the just created header
+			if (disp_fr_err(f_lseek(&fhdl, 0))) {
+				f_close(&fhdl);
+				return false;
+			}
+			uint8_t bytes_to_read = block_len - BASIC_HEADER_LEN;
+			if (disp_fr_err(f_read(&fhdl, start_buf_ptr + BASIC_HEADER_LEN, bytes_to_read, &bytes_read))) {
+				f_close(&fhdl);
+				return false;
+			}
+			if (bytes_read != bytes_to_read) {
+				disp_msg_p(msg_error_str,msg_block_too_short_str);
+				return false;
+			}
+			number_of_blocks = (uint8_t)((Finfo->fsize + BASIC_HEADER_LEN) / block_len);
+			if (HAS_NO_BLOCKNR) {
+				buf[0] = 1; // BASIC files start with block #1
+			}
+			return true;
+		}
+	}
+
+	if (HAS_NO_BLOCKNR) {
+		buf[0] = 0; // initialize the blocknr if not provided
+	}
+	
+	// No BASIC FCB and no BASIC extension, now check for regular FCB header
+	KC_FCB* fcb = (KC_FCB*) (buf + 1);
+	kc_file_type = OTHER_THAN_BASIC;
+	for (uint8_t i=0; i<8; i++) {
+		if ((fcb->dateiname[i] < 0x21 || fcb->dateiname[i] > 0x7f) && fcb->dateiname[i] != 0) {
+			// found unprintable character -> cannot be a real fcb
+			kc_file_type = RAW;
+			break;
+		}
+		if (kc_file_type == OTHER_THAN_BASIC) {
+			// Filename is ok, now we check the file extension
+			for (uint8_t i=0; i<3; i++) {
+				if ((fcb->dateityp[i] < 0x21 || fcb->dateityp[i] > 0x7f) && fcb->dateityp[i] != 0) {
+					// found unprintable character -> cannot be a real fcb
+					kc_file_type = RAW;
+					break;
+				}
+			}
+			if (kc_file_type == OTHER_THAN_BASIC) {
+				// now we're as sure as possible that we have a regular FCB
+				number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
+				return true;
+			}
+		}
+	}
+
+	// it is RAW, we have to create a FCB
+	memset(start_buf_ptr,0x0,block_len);
+	// we reuse the fcb_mc pointer created earlier
+	for (uint8_t i=0; i<8; i++) {
+		if (Finfo->fname + i < ext) {
+			fcb->dateiname[i] = Finfo->fname[i];
+		}
+		else {
+			fcb->dateiname[i] = 0x20;
+		}
+	}
+	bool end_reached = false;
+	for (uint8_t i=0; i<3; i++) {
+		if (!end_reached && ext[i+1])
+		fcb->dateityp[i] = ext[i+1];
+		else
+		{
+			end_reached=true;
+			fcb->dateiname[i] = 0x20;
+		}
+	}
+	fcb->aadr = 0x300;
+	number_of_blocks = (uint8_t)((Finfo->fsize / block_len) + 1);
+	if (HAS_NO_BLOCKNR) {
+		fcb->eadr = 0x300 + Finfo->fsize;
+	}
+	else {
+		fcb->eadr = 0x300 + (Finfo->fsize - number_of_blocks);
+	}
+	fcb->sadr = 0xffff;
+
+	return true;
+}
+
+static bool check_tap_types(FILINFO* Finfo) {
+	kc_file_type = TAP;
+	
+	number_of_blocks = (uint8_t)((Finfo->fsize - TAP_HEADER_LEN) / 129);
+	
+	// read the first block after the TAP_HEADER
+	UINT bytes_read;
+	if (disp_fr_err(f_lseek(&fhdl, TAP_HEADER_LEN)) || disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
+		f_close(&fhdl);
+		return false;
+	}
+
+	if (check_is_basic_fcb()) {
+		kc_file_type = TAP_BASIC;
+	}
+	else {
+		// workaround for TAP files that contain a meaningless block 0 before the
+		// actual first BASIC block #1. We remove it. We also replace will replace
+		// the block number of block #255 with a consecutive number later.
+		// so load the first block after the header and see if it is BASIC
+		if (disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
+			f_close(&fhdl);
+			return false;
+		}
+		if (check_is_basic_fcb()) {
+			// BASIC header found
+			kc_file_type = TAP_BASIC_EXTRA_BLOCKS;
+			number_of_blocks--;
+		}
+		else
+		{
+			// it is not BASIC
+			// rewind to beginning of first block after TAP header and reload
+			if (disp_fr_err(f_lseek(&fhdl, TAP_HEADER_LEN)) ||
+			disp_fr_err(f_read(&fhdl, start_buf_ptr, block_len, &bytes_read))) {
+				f_close(&fhdl);
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool load_first_block_and_check_type(FILINFO* Finfo) {
+	block_len = 129;
+	start_buf_ptr = buf;
+	if (Finfo->fsize < 128) { // file too short -> we don't even care to look further
+		lcd_clrscr();
+		xprintf(PSTR("ERR:%s"),Finfo->fname);
+		lcd_gotoxy(0,1);
+		xprintf(PSTR("Too short:%ub"),Finfo->fsize);
+		_delay_ms(ERROR_DISP_MILLIS);
+		return false;
+	}
+	if (disp_fr_err(f_open(&fhdl, Finfo->fname, FA_READ | FA_OPEN_EXISTING))) {
+		f_close(&fhdl);
+		return false;
+	}
+	// load first TAP_HEADER_LEN to check for TAP header
+	UINT bytes_read;
+	if (disp_fr_err(f_read(&fhdl, buf, TAP_HEADER_LEN, &bytes_read))) {
+		f_close(&fhdl);
+		return false;
+	}
+
+	if (strncmp_P((char*)buf,tap_header_str,bytes_read)) {
+		return check_non_tap_types(Finfo);
+	}
+	else {
+		return check_tap_types(Finfo);
+	}
+	return true;
 }

@@ -93,8 +93,9 @@ int main(void)
 	// main loop
 	while(1)
 	{
-		if (kc_cass_handle_recv_file()) {
-			continue; // we dont want to sleep while we receive a file
+		kc_cass_handle_recv_file();
+		if (system_state != IDLE) {
+			continue; // we dont want to sleep while we receive or send a file
 		}
 		switch(display_task)
 		{
@@ -142,7 +143,12 @@ int main(void)
 					break;
 				}
 			}
+			is_file_details_displayed = false;
 			select_key_pressed = false;
+		}
+		disp_timer++;
+		if (disp_timer > DISP_FILE_DETAILS_TIMEOUT_COUNT && !is_file_details_displayed && system_state == IDLE) {
+			display_file_details();
 		}
 		// sleep until an interrupt wakes us up
 		// (disk_and_debounce_timer does this ~4000 times a second)

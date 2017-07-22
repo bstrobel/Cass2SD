@@ -36,6 +36,6 @@
 
 void kc_cass_recv_file_init(void);
 void kc_cass_recv_file_disable(void);
-bool kc_cass_handle_recv_file(void); // returns true if in receive state
+void kc_cass_handle_recv_file(void); // returns true if in receive state
 
 #endif /* KC_CASS_RECV_FILE_H_ */

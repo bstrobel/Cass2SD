@@ -24,6 +24,7 @@ extern int16_t dir_idx;
 
 extern const char msg_error_str[] PROGMEM;
 extern const char msg_info_str[] PROGMEM;
+extern const char msg_block_too_short_str[] PROGMEM;
 
 void display_prev(void);
 void display_next(void);
@@ -37,6 +38,8 @@ void display_fresult (FRESULT);
 void disp_msg_p(const char* PROGMEM line1, const char* PROGMEM line2);
 bool disp_fr_err(FRESULT);
 void disp_util_fill_dir_name(void);
+void display_file_details(void);
+
 #ifdef DEBUG
 void display_debug_and_block(char* line1, uint8_t val1, uint8_t val2, uint8_t val3);
 #endif

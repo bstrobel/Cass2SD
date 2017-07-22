@@ -26,8 +26,8 @@ const char pct_d_str[] PROGMEM = "%d";
 const char pct_X_str[] PROGMEM = "0x%02X 0x%02X 0x%02X";
 const char msg_error_str[] PROGMEM = "ERROR";
 const char msg_info_str[] PROGMEM = "INFO";
+const char msg_block_too_short_str[] PROGMEM = "BLOCK TOO SHORT!";
 const char vol_name_str[] PROGMEM = "VOL:%s";
-//     BYTE    fs_type;      /* FAT type (0, FS_FAT12, FS_FAT16, FS_FAT32 or FS_EXFAT) */
 const char vol_free_str_unknown[] PROGMEM = "FR:%d.%dGB";
 const char vol_free_str_FS_FAT12[] PROGMEM = "FAT12 FR:%dMB";
 const char vol_free_str_FS_FAT16[] PROGMEM = "FAT16 FR:%dMB";
@@ -133,6 +133,8 @@ void display_fresult (FRESULT rc)
 
 void display_fileinfo(FILINFO* Finfo)
 {
+	is_file_details_displayed = false;
+	disp_timer = 0;
 	lcd_clrscr();
 	switch (dir_idx)
 	{
@@ -218,8 +220,8 @@ void display_sendinfo(char* filename, uint8_t block_len, uint8_t num_blocks, KC_
 		case BASIC_W_HEADER:
 			t="B_WHDR";
 			break;
-		case MACHINE_CODE:
-			t="MC";
+		case OTHER_THAN_BASIC:
+			t="OTHER";
 			break;
 		case TAP:
 			t="TAP_MC";
@@ -264,6 +266,122 @@ void display_upd_recvinfo(uint8_t blocknr)
 	xprintf(PSTR("%03d"),blocknr);
 }
 
+void disp_msg_p(const char* PROGMEM line1, const char* PROGMEM line2) {
+	lcd_clrscr();
+	xprintf(line1);
+	lcd_gotoxy(0,1);
+	xprintf(line2);
+	_delay_ms(ERROR_DISP_MILLIS);
+}
+
+void disp_util_fill_dir_name() {
+	char cwd[MAX_PATH_LENGTH];
+	f_getcwd(cwd, DIR_NAME_SIZE);
+	uint8_t str_end = 0;
+	for (str_end=0;str_end < DIR_NAME_SIZE && cwd[str_end]; str_end++);
+	for (uint8_t i = str_end - 1; i>=0; i--) {
+		if (cwd[i] == '/') {
+			strlcpy(dir_name,cwd+i+1,DIR_NAME_SIZE);
+			break;
+		}
+	}
+	
+}
+
+void display_file_details() {
+	if (dir_idx >= DIR_IDX_FIRST_FILE && !(Finfo.fattrib & AM_DIR) && load_first_block_and_check_type(&Finfo)) {
+		lcd_clrscr();
+		#define LEN_FILENAME 9
+		#define LEN_FILETYPE 4
+		char filename[LEN_FILENAME];
+		char fileext[LEN_FILETYPE];
+		if (TYPE_IS_BASIC_WITH_HEADER) {
+			KC_FCB_BASIC* fcb = (KC_FCB_BASIC*) (buf + 1);
+			strlcpy(filename,fcb->dateiname,LEN_FILENAME);
+			strlcpy(fileext,fcb->dateityp,LEN_FILETYPE);
+			for (uint8_t i = 0; i < LEN_FILETYPE - 1; i++) {
+				fileext[i] -= 0x80;
+			}
+		}
+		else if (TYPE_IS_WITH_HEADER_NO_BASIC) {
+			KC_FCB* fcb = (KC_FCB*) (buf + 1);
+			strlcpy(filename,fcb->dateiname,LEN_FILENAME);
+			strlcpy(fileext,fcb->dateityp,LEN_FILETYPE);
+		}
+		else {
+			char* ext = strchr(Finfo.fname,'.');
+			char* src = Finfo.fname;
+			char* dst = filename;
+			do {
+				*dst = *src;
+				src++;
+				dst++;
+			} 
+			while (src < ext && dst < filename + LEN_FILENAME);
+			*dst = 0;
+			src = ext + 1;
+			dst = fileext;
+			do {
+				*dst = *src;
+				src++;
+				dst++;
+			}
+			while (*src && src < ext+4 && dst < fileext + LEN_FILETYPE);
+			*dst = 0;
+		}
+		xprintf(PSTR("%s [%s]"),filename, fileext);
+		lcd_gotoxy(0,1);
+		char* t;
+		switch(kc_file_type)
+		{
+			case BASIC_NO_HEADER: {
+				t="B_NOHD";
+				break;
+			}
+			case BASIC_W_HEADER: {
+				t="B_WHDR";
+				break;
+			}
+			case OTHER_THAN_BASIC: {
+				t="MC";
+				break;
+			}
+			case TAP: {
+				t="TAP";
+				break;
+			}
+			case TAP_BASIC: {
+				t="TAP_B";
+				break;
+			}
+			case TAP_BASIC_EXTRA_BLOCKS: {
+				t="TAP_BX";
+				break;
+			}
+			default:
+			case RAW: {
+				t="RAW";
+				break;
+			}
+		}
+		xprintf(PSTR("#%03d%c %s"),number_of_blocks,block_len==128?'!':' ', t);
+	}
+	is_file_details_displayed = true;
+}
+
+#ifdef DEBUG
+void display_debug_and_block(char* line1, uint8_t val1, uint8_t val2, uint8_t val3)
+{
+	lcd_clrscr();
+	xprintf(pct_s_str,line1);
+	lcd_gotoxy(0,1);
+	xprintf(pct_X_str, val1, val2, val3);
+	select_key_pressed = 0;
+	while(!select_key_pressed);
+}
+#endif
+
+
 /* Format string is placed in the ROM. The format flags is similar to printf().
 
    %[flag][width][size]type
@@ -288,37 +406,3 @@ void display_upd_recvinfo(uint8_t blocknr)
      '%' : '%'
 
 */
-
-void disp_msg_p(const char* PROGMEM line1, const char* PROGMEM line2) {
-	lcd_clrscr();
-	xprintf(line1);
-	lcd_gotoxy(0,1);
-	xprintf(line2);
-	_delay_ms(ERROR_DISP_MILLIS);
-}
-
-void disp_util_fill_dir_name() {
-	char cwd[MAX_PATH_LENGTH];
-	f_getcwd(cwd, DIR_NAME_SIZE);
-	uint8_t str_end = 0;
-	for (str_end=0;str_end < DIR_NAME_SIZE && cwd[str_end]; str_end++);
-	for (uint8_t i = str_end - 1; i>=0; i--) {
-		if (cwd[i] == '/') {
-			strlcpy(dir_name,cwd+i+1,DIR_NAME_SIZE);
-			break;
-		}
-	}
-	
-}
-
-#ifdef DEBUG
-void display_debug_and_block(char* line1, uint8_t val1, uint8_t val2, uint8_t val3)
-{
-	lcd_clrscr();
-	xprintf(pct_s_str,line1);
-	lcd_gotoxy(0,1);
-	xprintf(pct_X_str, val1, val2, val3);
-	select_key_pressed = 0;
-	while(!select_key_pressed);
-}
-#endif

@@ -75,7 +75,6 @@ typedef enum {
 } recv_state_enum;
 volatile recv_state_enum recv_state = RECV_HANDLER_ACK;
 
-volatile bool is_receiving = false;
 volatile uint8_t buf_idx = 0;
 char file_name_on_disk[LEN_DATEINAME + 1 + LEN_DATEITYP + 1]; // contains 8byte name + 1 dot + 3byte ext + 0x00byte
 char file_type[LEN_DATEITYP + 1]; // 3byte + 0x00byte
@@ -90,7 +89,9 @@ volatile uint16_t cntr_val = 0;
 
 static void reset_recv_state() {
 	STOP_TIMER1;
-	is_receiving = false;
+	if (system_state == RECEIVING) {
+		system_state = IDLE;
+	}
 	block_cntr = 0;
 	buf_idx = 0;
 	file_name_on_disk[0] = 0;
@@ -182,7 +183,7 @@ static void get_filename_from_fcb() {
 		}
 	}
 	else {
-		KC_FCB_MC* fcb = (KC_FCB_MC*) (buf + 1);
+		KC_FCB* fcb = (KC_FCB*) (buf + 1);
 		dateiname = fcb->dateiname;
 		dateityp = fcb->dateityp;
 		for (uint8_t i = 0; i < LEN_DATEITYP; i++) {
@@ -235,7 +236,7 @@ void kc_cass_recv_file_disable() {
 /************************************************************************/
 /* To be called from the main while loop                                */
 /************************************************************************/
-bool kc_cass_handle_recv_file() {
+void kc_cass_handle_recv_file() {
 	recv_state_enum _recv_state;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		_recv_state = recv_state;
@@ -243,7 +244,7 @@ bool kc_cass_handle_recv_file() {
 	}
 	switch (_recv_state) {
 		case RECV_OVERRUN_OCCURED: {
-			if (is_receiving) {
+			if (system_state == RECEIVING) {
 				reset_recv_state();
 				f_close(&fhdl);
 				disp_msg_p(msg_error_str,PSTR("OVERRUN!")); // we are only interested in overruns during receive
@@ -253,8 +254,8 @@ bool kc_cass_handle_recv_file() {
 		case RECV_VORTON_DETECTED: {
 			memset(buf,0x0,DATA_BUF_SIZE);
 			buf_idx = 0;
-			if (!is_receiving) {
-				is_receiving = true;
+			if (system_state == IDLE) {
+				system_state = RECEIVING;
 				block_cntr = 0;
 				display_recvinfo(NULL,0,NULL);
 			}
@@ -264,7 +265,7 @@ bool kc_cass_handle_recv_file() {
 			#ifdef DEBUG_RECV_TIMER
 			MONITOR_RECV_PIN2_TOGGLE;
 			#endif
-			if (is_receiving) {
+			if (system_state == RECEIVING) {
 				if (buf_idx < MAX_BUF_IDX) {
 					buf[buf_idx] = recv_byte;
 					buf_idx++;
@@ -343,7 +344,7 @@ bool kc_cass_handle_recv_file() {
 			break;
 		}
 		case RECV_BIT_TIMEOUT: {
-			if (is_receiving) {
+			if (system_state == RECEIVING) {
 				reset_recv_state();
 				f_close(&fhdl);
 				disp_msg_p(msg_info_saved_str,PSTR(""));
@@ -360,5 +361,4 @@ bool kc_cass_handle_recv_file() {
 			break;
 		}
 	}
-	return is_receiving;
 }

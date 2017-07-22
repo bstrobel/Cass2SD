@@ -17,10 +17,11 @@ kc_cass_recv_file.d kc_cass_recv_file.o: .././kc_cass_recv_file.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\atomic.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h \
  .././kc_cass_common.h .././../ff_avr/ff.h .././../ff_avr/integer.h \
- .././../ff_avr/ffconf.h .././display_util.h .././kc_cass_recv_file.h \
- .././../ff_avr/xitoa.h .././../lcd/lcd.h
+ .././../ff_avr/ffconf.h .././kc_cass_send_file.h .././display_util.h \
+ .././../ff_avr/xitoa.h .././../lcd/lcd.h .././kc_cass_recv_file.h
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -58,6 +59,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h:
 
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\atomic.h:
+
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h:
 
 .././kc_cass_common.h:
@@ -68,10 +71,12 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\
 
 .././../ff_avr/ffconf.h:
 
-.././display_util.h:
+.././kc_cass_send_file.h:
 
-.././kc_cass_recv_file.h:
+.././display_util.h:
 
 .././../ff_avr/xitoa.h:
 
 .././../lcd/lcd.h:
+
+.././kc_cass_recv_file.h:
