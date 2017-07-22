@@ -276,7 +276,7 @@ void disp_msg_p(const char* PROGMEM line1, const char* PROGMEM line2) {
 
 void disp_util_fill_dir_name() {
 	char cwd[MAX_PATH_LENGTH];
-	f_getcwd(cwd, DIR_NAME_SIZE);
+	f_getcwd(cwd, MAX_PATH_LENGTH);
 	uint8_t str_end = 0;
 	for (str_end=0;str_end < DIR_NAME_SIZE && cwd[str_end]; str_end++);
 	for (uint8_t i = str_end - 1; i>=0; i--) {
