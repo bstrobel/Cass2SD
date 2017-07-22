@@ -50,6 +50,9 @@ void display_prev()
 	if (dir_idx > 0)
 	{
 		dir_idx--;
+		if (dir_idx == 0) {
+			f_readdir(&Dir,NULL); // rewinds to first item
+		}
 		if (dir_idx >= DIR_IDX_FIRST_FILE)
 		{
 			// FAT lib doesn't provide a way to go backwards through the list of files
@@ -62,7 +65,6 @@ void display_prev()
 		}
 		display_fileinfo(&Finfo);
 	}
-
 }
 
 void display_next()
