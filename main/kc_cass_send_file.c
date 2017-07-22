@@ -110,6 +110,11 @@ static void send_byte(uint8_t byte) {
 	send_bit(SPACE); // this doesn't block!
 }
 
+static void reset_state() {
+	kc_cass_recv_file_init();
+	system_state = IDLE;
+}
+
 void send_file(FILINFO* Finfo) {
 	if (system_state != IDLE) {
 		return;
@@ -147,6 +152,8 @@ void send_file(FILINFO* Finfo) {
 					select_key_pressed = false;
 					disp_msg_p(PSTR("SEND FILE"),PSTR("INTERRUPTED!"));
 					f_close(&fhdl);
+					reset_state();
+					display_fileinfo(Finfo);
 					return;
 				}
 			}
@@ -183,6 +190,5 @@ void send_file(FILINFO* Finfo) {
 	}
 	display_fileinfo(Finfo);
 	while(send_state!=DONE);
-	kc_cass_recv_file_init();
-	system_state = IDLE;
+	reset_state();
 }
