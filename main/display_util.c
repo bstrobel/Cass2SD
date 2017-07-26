@@ -21,18 +21,20 @@
 const char dotdotdir_str[] PROGMEM = ".. [GO UP]";
 const char dir_str[] PROGMEM = "[DIR]";
 const char empty_dir_str[] PROGMEM = "[Empty Dir]";
-const char pct_s_str[] PROGMEM = "%s";
 const char pct_u_str[] PROGMEM = "%lu";
+#ifdef DEBUG
 const char pct_X_str[] PROGMEM = "0x%02X 0x%02X 0x%02X";
+#endif // DEBUG
 const char msg_error_str[] PROGMEM = "ERROR";
 const char msg_info_str[] PROGMEM = "INFO";
 const char msg_block_too_short_str[] PROGMEM = "BLOCK TOO SHORT!";
 const char vol_name_str[] PROGMEM = "VOL:%s";
-const char vol_free_str_unknown[] PROGMEM = "FR:%luMB";
-const char vol_free_str_FS_FAT12[] PROGMEM = "FAT12 FR:%luMB";
-const char vol_free_str_FS_FAT16[] PROGMEM = "FAT16 FR:%luMB";
-const char vol_free_str_FS_FAT32[] PROGMEM = "FAT32 FR:%luMB";
-const char vol_free_str_FS_EXFAT[] PROGMEM = "EXFAT FR:%luMB";
+const char vol_type_free_str[] PROGMEM = "%S FR:%luMB";
+const char vol_type_unknown[] PROGMEM = "UNKWN";
+const char vol_type_FAT12[] PROGMEM = "FAT12";
+const char vol_type_FAT16[] PROGMEM = "FAT16";
+const char vol_type_FAT32[] PROGMEM = "FAT32";
+const char vol_type_EXFAT[] PROGMEM = "EXFAT";
 const char file_type_str_B_NOHD[] PROGMEM ="B_NOHD";
 const char file_type_str_B_WHDR[] PROGMEM ="B_WHDR";
 const char file_type_str_OTHER[] PROGMEM ="OTHER";
@@ -150,9 +152,9 @@ void display_fileinfo(FILINFO* Finfo)
 		case DIR_IDX_GO_UP:
 		{
 			if (dir_name[0]) { // sub dir
-				xprintf(pct_s_str, dir_name);
+				lcd_puts(dir_name);
 				lcd_gotoxy(0,1);
-				xprintf(dotdotdir_str);
+				lcd_puts_p(dotdotdir_str);
 			}
 			else { // root dir
 				char label[24];
@@ -167,28 +169,30 @@ void display_fileinfo(FILINFO* Finfo)
 				#else
 				DWORD free_mbytes = free_clusters * FatFs.csize * _MAX_SS / (1024UL * 1024UL);
 				#endif
+				PGM_P t;
 				switch (FatFs.fs_type) {
 					case FS_EXFAT: {
-						xprintf(vol_free_str_FS_EXFAT,free_mbytes);
+						t = vol_type_EXFAT;
 						break;
 					}
 					case FS_FAT12: {
-						xprintf(vol_free_str_FS_FAT12,free_mbytes);
+						t = vol_type_FAT12;
 						break;
 					}
 					case FS_FAT16: {
-						xprintf(vol_free_str_FS_FAT16,free_mbytes);
+						t = vol_type_FAT16;
 						break;
 					}
 					case FS_FAT32: {
-						xprintf(vol_free_str_FS_FAT32,free_mbytes);
+						t = vol_type_FAT32;
 						break;
 					}
 					default: {
-						xprintf(vol_free_str_unknown,free_mbytes);
+						t = vol_type_unknown;
 						break;
 					}
 				}
+				xprintf(vol_type_free_str,t,free_mbytes);
 			}
 			break;
 		}
@@ -196,14 +200,14 @@ void display_fileinfo(FILINFO* Finfo)
 		{
 			if (dir_idx == DIR_IDX_FIRST_FILE && !Finfo->fname[0])
 			{
-				xprintf(empty_dir_str);
+				lcd_puts_p(empty_dir_str);
 			}
 			else
 			{
-				xprintf(pct_s_str, Finfo->fname);
+				lcd_puts(Finfo->fname);
 				lcd_gotoxy(0,1);
 				if (Finfo->fattrib & AM_DIR) {
-					xprintf(dir_str);
+					lcd_puts_p(dir_str);
 				}
 				else
 				{
@@ -218,7 +222,7 @@ void display_fileinfo(FILINFO* Finfo)
 void display_sendinfo(char* filename, uint8_t block_len, uint8_t num_blocks, KC_FILE_TYPE file_type)
 {
 	lcd_clrscr();
-	xprintf(PSTR("SND:%s"),filename);
+	xprintf(PSTR("LOAD:%s"),filename);
 	lcd_gotoxy(0,1);
 	PGM_P t;
 	switch(file_type)
@@ -265,12 +269,12 @@ void display_upd_sendinfo(uint8_t blocknr)
 void display_recvinfo(char* filename, uint8_t blocknr, char* filetype) {
 	lcd_clrscr();
 	if (filename == NULL) {
-		xprintf(PSTR("RCV:????????.???"));
+		xprintf(PSTR("SAVE:????????.???"));
 		lcd_gotoxy(0,1);
 		xprintf(PSTR("#??? TYPE:???"));
 	}
 	else {
-		xprintf(PSTR("RCV:%s"),filename);
+		xprintf(PSTR("SAVE:%s"),filename);
 		lcd_gotoxy(0,1);
 		xprintf(PSTR("#%03d TYPE:%s"),blocknr,filetype);
 	}
@@ -284,9 +288,9 @@ void display_upd_recvinfo(uint8_t blocknr)
 
 void disp_msg_p(const char* PROGMEM line1, const char* PROGMEM line2) {
 	lcd_clrscr();
-	xprintf(line1);
+	lcd_puts_p(line1);
 	lcd_gotoxy(0,1);
-	xprintf(line2);
+	lcd_puts_p(line2);
 	_delay_ms(ERROR_DISP_MILLIS);
 }
 
@@ -389,7 +393,7 @@ void display_file_details() {
 void display_debug_and_block(char* line1, uint8_t val1, uint8_t val2, uint8_t val3)
 {
 	lcd_clrscr();
-	xprintf(pct_s_str,line1);
+	lcd_puts(line1);
 	lcd_gotoxy(0,1);
 	xprintf(pct_X_str, val1, val2, val3);
 	select_key_pressed = 0;
