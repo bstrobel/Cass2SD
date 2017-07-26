@@ -90,6 +90,7 @@ int main(void)
 	dir_idx = -1;
 	display_next();
 	
+	select_key_changed = false;
 	// main loop
 	while(1)
 	{
@@ -110,8 +111,9 @@ int main(void)
 		case STAY:
 			break;
 		}
-		if (select_key_pressed)
+		if (select_key_changed && select_key_pressed)
 		{
+			select_key_changed = false;
 			switch (dir_idx)
 			{
 				case DIR_IDX_GO_UP:
@@ -144,7 +146,6 @@ int main(void)
 				}
 			}
 			is_file_details_displayed = false;
-			select_key_pressed = false;
 		}
 		disp_timer++;
 		if (disp_timer > DISP_FILE_DETAILS_TIMEOUT_COUNT && !is_file_details_displayed && system_state == IDLE) {

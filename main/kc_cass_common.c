@@ -19,8 +19,8 @@
 #include "display_util.h"
 #include "kc_cass_common.h"
 
-DIR Dir;			/* http://elm-chan.org/fsw/ff/doc/sdir.html */
-FILINFO Finfo; /* http://elm-chan.org/fsw/ff/doc/sfileinfo.html */
+DIR Dir;			/* http://elm-chan.org/fsw/ff/00index_e.html */
+FILINFO Finfo;
 FRESULT fr;
 FATFS FatFs;		/* File system object for each logical drive */
 FIL fhdl;
@@ -49,35 +49,6 @@ ISR(TIMER2_COMPA_vect)
 	if (timer_cntr++ > 39) {
 		disk_timerproc();	/* Drive timer procedure of low level disk I/O module */
 		timer_cntr=0;
-	}
-	// check for button presses
-	if ((keys_changed_bitmap & _BV(START_STOP_KEY)) && (~keys_bitmap & _BV(START_STOP_KEY)))
-	{
-		keys_changed_bitmap &= ~_BV(START_STOP_KEY);
-		select_key_pressed = true;
-	}
-	// check for adjustment (rotary encoder)
-	if (keys_changed_bitmap & _BV(ROTARY_A))
-	{
-		keys_changed_bitmap &= ~_BV(ROTARY_A);
-		if (!(keys_bitmap & _BV(ROTARY_A))) // A changed to L
-		{
-			if (keys_bitmap & _BV(ROTARY_B)) // and B is H
-			{
-				display_task=UP;
-			}
-		}
-	}
-	if (keys_changed_bitmap & _BV(ROTARY_B))
-	{
-		keys_changed_bitmap &= ~_BV(ROTARY_B);
-		if (!(keys_bitmap & _BV(ROTARY_B))) // B changed to L
-		{
-			if (keys_bitmap & _BV(ROTARY_A)) // and A is H
-			{
-				display_task=DOWN;
-			}
-		}
 	}
 	handle_keys();
 	disp_timer++;

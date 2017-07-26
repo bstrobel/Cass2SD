@@ -121,7 +121,7 @@ void send_file(FILINFO* Finfo) {
 	}
 	system_state = SENDING;
 	kc_cass_recv_file_disable();
-	select_key_pressed = false;
+	select_key_changed = false;
 	uint8_t current_block = 1;
 	if (load_first_block_and_check_type(Finfo)) {
 		
@@ -148,8 +148,8 @@ void send_file(FILINFO* Finfo) {
 			for (uint8_t i = 0; i < DATA_BUF_SIZE; i++) {
 				send_byte(buf[i]);
 			
-				if (select_key_pressed) {
-					select_key_pressed = false;
+				if (select_key_changed && select_key_pressed) {
+					select_key_changed = false;
 					disp_msg_p(PSTR("SEND FILE"),PSTR("INTERRUPTED!"));
 					f_close(&fhdl);
 					reset_state();

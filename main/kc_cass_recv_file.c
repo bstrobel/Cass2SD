@@ -21,30 +21,33 @@
 #include "../lcd/lcd.h"
 #include "kc_cass_recv_file.h"
 
-// Clock_Timer1(Prescaler=8MHz/8=1MHz -> 1 tick = 1탎
+// Clock_Timer1(Prescaler=8MHz/64=125kHz -> 1 tick = 8탎
 // f_One=1000Hz -> 1ms/2 => 500탎
 // f_Zero=2000Hz -> 500탎/2 => 250탎
 // f_Space=500Hz -> 2ms/2 => 1000탎
-// 1ms => 1000 ticks
-#define RECV_TIMER_TIMEOUT_CNT 64000U			// 64ms
-#define RECV_TIMER_ZERO_LOWER_THRESHOLD 175U	// 0.175ms
-#define RECV_TIMER_ZERO_UPPER_THRESHOLD 375U	// 0.375ms
-#define RECV_TIMER_ONE_UPPER_THRESHOLD 750U		// 0.75ms
+// all values in RECV_TIMER_... in 탎!
+#define RECV_TIMER_TIMEOUT_CNT 160000U			// 160ms
+#define RECV_TIMER_ZERO_LOWER_THRESHOLD 120U
+#define RECV_TIMER_ZERO_UPPER_THRESHOLD 375U
+#define RECV_TIMER_ONE_LOWER_THRESHOLD RECV_TIMER_ZERO_UPPER_THRESHOLD
+#define RECV_TIMER_ONE_UPPER_THRESHOLD 750U		// KC85/3 has space cycles of as low as 660탎!
+#define RECV_TIMER_SPACE_LOWER_THRESHOLD RECV_TIMER_ONE_UPPER_THRESHOLD
 
-#define IS_SPACE(ctr) (ctr > RECV_TIMER_ONE_UPPER_THRESHOLD)
-#define IS_ONE(ctr) (ctr > RECV_TIMER_ZERO_UPPER_THRESHOLD && ctr <= RECV_TIMER_ONE_UPPER_THRESHOLD)
-#define IS_ZERO(ctr) (ctr > RECV_TIMER_ZERO_LOWER_THRESHOLD && ctr <= RECV_TIMER_ZERO_UPPER_THRESHOLD)
+#define IS_SPACE(ctr) (ctr > (RECV_TIMER_SPACE_LOWER_THRESHOLD/8))
+#define IS_ONE(ctr) (ctr > (RECV_TIMER_ONE_LOWER_THRESHOLD/8) && ctr <= (RECV_TIMER_ONE_UPPER_THRESHOLD/8))
+#define IS_ZERO(ctr) (ctr > (RECV_TIMER_ZERO_LOWER_THRESHOLD/8) && ctr <= (RECV_TIMER_ZERO_UPPER_THRESHOLD/8))
 
 // Timer config
 // TIMSK1 = _BV(OCIE1A); // allow interrupts for OCR1A match
 // TIMSK1 = _BV(TOIE1); // allow TIMER1 Overflow
-// TCCR1B = _BV(WGM12) || _BV(CS11); // Enable timer in CTC-Mode (WGM12), pre-scaler = 8 (CS11), 1MHz timer clock
-// TCCR1B = _BV(CS11); // Enable timer in Normal-Mode, TOP=MAX, pre-scaler = 8 (CS11), 1MHz timer clock
+// TCCR1B = _BV(WGM12) | _BV(CS11); // Enable timer in CTC-Mode (WGM12), pre-scaler = 8 (CS11), 1MHz timer clock
+// TCCR1B = _BV(CS11) | _BV(CS10); // Enable timer in Normal-Mode, TOP=MAX, pre-scaler = 64 (CS11,CS10), 125kHz timer clock
+// TCCR1B = _BV(WGM12) | _BV(CS11) | _BV(CS10); // Enable timer in CTC-Mode (WGM12), pre-scaler = 64 (CS11,CS10), 125kHz timer clock
 #define START_TIMER1 {\
 	TCCR1B = 0; \
 	TCNT1 = 0; \
 	TIMSK1 = _BV(OCIE1A); \
-	TCCR1B = _BV(WGM12) | _BV(CS11); \
+	TCCR1B = _BV(WGM12) | _BV(CS11) | _BV(CS10); \
 }
 
 
@@ -57,8 +60,9 @@
 	TIFR1 = 0; \
 }
 
-#define MIN_ONE_BITS_IN_VORTON 9U
-#define IS_VORTON(ctr) (ctr >= MIN_ONE_BITS_IN_VORTON)
+#define MIN_ONE_BITS_IN_VORTON (VORTON_BLOCK / 2U)
+#define IS_FILE_START_VORTON(ctr) (ctr >= (VORTON_FFBLOCK + 10U))
+#define IS_BLOCK_VORTON(ctr) (ctr >= MIN_ONE_BITS_IN_VORTON)
 #define MIN_SPACE_CNT_FOR_SENDFILE 100U
 #define IS_START_SENDFILE(ctr) (ctr >= MIN_SPACE_CNT_FOR_SENDFILE)
 
@@ -66,7 +70,8 @@
 #define MAX_BUF_IDX (DATA_BUF_SIZE - 1)
 
 typedef enum {
-	RECV_VORTON_DETECTED,
+	RECV_BLOCK_VORTON_DETECTED,
+	RECV_FILE_START_VORTON_DETECTED,
 	RECV_BYTE_READY, 
 	RECV_BIT_TIMEOUT, 
 	RECV_HANDLER_ACK, 
@@ -102,6 +107,7 @@ static void reset_recv_state() {
 // can be at end of file)
 //ISR(TIMER1_OVF_vect) {
 ISR(TIMER1_COMPA_vect) {
+	STOP_TIMER1;
 	is_time_measure_running = false;
 	if (recv_state == RECV_HANDLER_ACK) {
 		recv_state = RECV_BIT_TIMEOUT;
@@ -109,62 +115,72 @@ ISR(TIMER1_COMPA_vect) {
 	else {
 		recv_state = RECV_OVERRUN_OCCURED;
 	}
+	#ifdef DEBUG_RECV_TIMER
+	MONITOR_RECV_PIN1_HIGH;
+	#endif
 }
 
 // is fired at each change in logical level of pin
 ISR(INT0_vect) {
 	cntr_val = TCNT1;
-	#ifdef DEBUG_RECV_TIMER
-	MONITOR_RECV_PIN1_HIGH;
-	#endif
 	if (is_time_measure_running) {
 		START_TIMER1; // need to start it to catch the last timeout
-		if (recv_state != RECV_HANDLER_ACK) {
-			recv_state = RECV_OVERRUN_OCCURED;
-		}
-		else {
-			if (IS_SPACE(cntr_val)) {
+	#ifdef DEBUG_RECV_TIMER
+	MONITOR_RECV_PIN1_LOW;
+	#endif
+		if (IS_SPACE(cntr_val)) {
+			if (recv_state != RECV_HANDLER_ACK) {
+				recv_state = RECV_OVERRUN_OCCURED;
+			}
+			else {
 				if (IS_START_SENDFILE(space_cntr)) {
 					recv_state = RECV_START_SENDFILE;
 					space_cntr = 0;
 				}
 				else {
+					// Spaces can be very long (>80ms on KC85/3), this is to filter out noise
+					// We want to act only on the first SPACE to avoid saving a block multiple times
+					if (space_cntr==0) { 
+						if (IS_FILE_START_VORTON(vorton_cntr)) {
+							recv_state = RECV_FILE_START_VORTON_DETECTED;
+						}
+						else if (IS_BLOCK_VORTON(vorton_cntr)) {
+							recv_state = RECV_BLOCK_VORTON_DETECTED;
+						}
+						else {
+							recv_state = RECV_BYTE_READY;
+						}
+					}
 					space_cntr++;
-					if (IS_VORTON(vorton_cntr)) {
-						recv_state = RECV_VORTON_DETECTED;
-					}
-					else {
-						recv_state = RECV_BYTE_READY;
-					}
 				}
-				vorton_cntr = 0;
-				is_time_measure_running = false;
 			}
-			else if (IS_ONE(cntr_val)) {
-				recv_byte >>= 1;
-				vorton_cntr++;
-				space_cntr = 0;
-				recv_byte |= 0x80;
-				is_time_measure_running = false;
-			}
-			else if (IS_ZERO(cntr_val)) {
-				recv_byte >>= 1;
-				vorton_cntr=0;
-				space_cntr=0;
-				is_time_measure_running = false;
-			}
-			// If we don't recognize one of the signals, we ignore it
-			// this is done to filter out noise
+			vorton_cntr = 0;
+			is_time_measure_running = false;
 		}
+		else if (IS_ONE(cntr_val)) {
+			recv_byte >>= 1;
+			vorton_cntr++;
+			space_cntr = 0;
+			recv_byte |= 0x80;
+			is_time_measure_running = false;
+		}
+		else if (IS_ZERO(cntr_val)) {
+			recv_byte >>= 1;
+			vorton_cntr=0;
+			space_cntr=0;
+			is_time_measure_running = false;
+		}
+		// If we don't recognize one of the signals, we ignore it
+		// this is done to filter out noise
 	}
 	else {
 		// initialize and start timer
 		START_TIMER1;
-		is_time_measure_running = true;
-	}
 	#ifdef DEBUG_RECV_TIMER
 	MONITOR_RECV_PIN1_LOW;
 	#endif
+		is_time_measure_running = true;
+	}
 }
 
 static void get_filename_from_fcb() {
@@ -222,7 +238,7 @@ void kc_cass_recv_file_init() {
 	EIFR &= _BV(INT0); // clear int flag reg
 	EIMSK |= _BV(INT0); // enable int INT0
 	EICRA = _BV(ISC00); // any change in logical level on pin will generate int
-	OCR1A = RECV_TIMER_TIMEOUT_CNT; // set TOP of counter
+	OCR1A = RECV_TIMER_TIMEOUT_CNT/8U; // set TOP of counter
 	TCCR1A = 0; // COM1[A,B][1,0]=0 => Compare Output Mode=normal; WGM[10,11]=0 => Normal or CTC mode
 	reset_recv_state();
 }
@@ -238,9 +254,11 @@ void kc_cass_recv_file_disable() {
 /************************************************************************/
 void kc_cass_handle_recv_file() {
 	recv_state_enum _recv_state;
+	uint8_t _recv_byte;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		_recv_state = recv_state;
 		recv_state = RECV_HANDLER_ACK;
+		_recv_byte = recv_byte;
 	}
 	switch (_recv_state) {
 		case RECV_OVERRUN_OCCURED: {
@@ -251,39 +269,46 @@ void kc_cass_handle_recv_file() {
 			}
 			break;
 		}
-		case RECV_VORTON_DETECTED: {
-			memset(buf,0x0,DATA_BUF_SIZE);
-			buf_idx = 0;
+		case RECV_FILE_START_VORTON_DETECTED: {
 			if (system_state == IDLE) {
 				system_state = RECEIVING;
 				block_cntr = 0;
+				memset(buf,0x0,DATA_BUF_SIZE);
+				buf_idx = 0;
 				display_recvinfo(NULL,0,NULL);
 			}
 			break;
 		}
+		case RECV_BLOCK_VORTON_DETECTED: {
+			if (system_state == RECEIVING) {
+				memset(buf,0x0,DATA_BUF_SIZE);
+				buf_idx = 0;
+			}
+			break;
+		}
+		case RECV_BIT_TIMEOUT:
 		case RECV_BYTE_READY: {
-			#ifdef DEBUG_RECV_TIMER
-			MONITOR_RECV_PIN2_TOGGLE;
-			#endif
 			if (system_state == RECEIVING) {
 				if (buf_idx < MAX_BUF_IDX) {
-					buf[buf_idx] = recv_byte;
+					buf[buf_idx] = _recv_byte;
 					buf_idx++;
-					recv_byte = 0;
 				}
 				else if (buf_idx == MAX_BUF_IDX) { // block completely received
 					UINT bytes_written = 0;
-					if (recv_byte != calculate_checksum()) {
+					if (_recv_byte != calculate_checksum()) {
 						reset_recv_state();
 						f_close(&fhdl);
 						lcd_clrscr();
 						xprintf(PSTR("WRONG CHECKSUM"));
 						lcd_gotoxy(0,1);
-						xprintf(PSTR("rcv=%d clc=%d"), recv_byte, calculate_checksum());
+						xprintf(PSTR("rcv=%d clc=%d"), _recv_byte, calculate_checksum());
 						_delay_ms(ERROR_DISP_MILLIS);
 						break;
 					}
 
+					#ifdef DEBUG_RECV_TIMER
+					MONITOR_RECV_PIN2_HIGH;
+					#endif
 					if (block_cntr == 0) { // first block
 						f_close(&fhdl); // just to be sure
 						get_filename_from_fcb();
@@ -317,6 +342,9 @@ void kc_cass_handle_recv_file() {
 					}
 
 					fr = f_write(&fhdl, buf, DISK_BLOCK_SIZE, &bytes_written);
+					#ifdef DEBUG_RECV_TIMER
+					MONITOR_RECV_PIN2_LOW;
+					#endif
 					if (fr != FR_OK || bytes_written != DISK_BLOCK_SIZE) {
 						reset_recv_state();
 						f_close(&fhdl);
@@ -325,6 +353,17 @@ void kc_cass_handle_recv_file() {
 						}
 						disp_msg_p(msg_error_str,PSTR("WRITE FILE"));
 						break;
+					}
+					// stop the receiving process if we are in a TIMEOUT state
+					// this is the intended exit of the receiving process
+					if (_recv_state == RECV_BIT_TIMEOUT) {
+						reset_recv_state();
+						f_close(&fhdl);
+						#ifdef DEBUG_RECV_TIMER
+						MONITOR_RECV_PIN1_LOW;
+						#endif
+						disp_msg_p(msg_info_saved_str,PSTR(""));
+						display_by_name(file_name_on_disk, false);
 					}
 					block_cntr++;
 					if (block_cntr == 0) {
@@ -343,15 +382,6 @@ void kc_cass_handle_recv_file() {
 			}
 			break;
 		}
-		case RECV_BIT_TIMEOUT: {
-			if (system_state == RECEIVING) {
-				reset_recv_state();
-				f_close(&fhdl);
-				disp_msg_p(msg_info_saved_str,PSTR(""));
-				display_by_name(file_name_on_disk, false);
-			}
-			break;
-		}
 		case RECV_START_SENDFILE: {
 			send_file(&Finfo);
 			break;
@@ -361,4 +391,7 @@ void kc_cass_handle_recv_file() {
 			break;
 		}
 	}
+	#ifdef DEBUG_RECV_TIMER
+	MONITOR_RECV_PIN2_LOW;
+	#endif
 }

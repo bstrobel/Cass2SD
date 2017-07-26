@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 #ifndef DEBOUNCE_COUNTER_MAX
-#	define DEBOUNCE_COUNTER_MAX 10U
+#	define DEBOUNCE_COUNTER_MAX 15U
 #endif
 
 #define PORT_ID_PORTA 0
@@ -27,19 +27,17 @@
 	{PORT_ID_PORTC, PINC5} \
 }
 
-extern volatile uint8_t keys_bitmap;
-extern volatile uint8_t keys_changed_bitmap;
-
 extern void handle_keys(void);
 extern void keys_init(void);
 
 typedef enum {STAY=0, UP, DOWN} DIRECTION;
 
-#define START_STOP_KEY 0
-#define ROTARY_A START_STOP_KEY + 1
+#define SELECT_KEY 0
+#define ROTARY_A SELECT_KEY + 1
 #define ROTARY_B ROTARY_A + 1
 
 extern volatile DIRECTION display_task;
 extern volatile bool select_key_pressed;
+extern volatile bool select_key_changed;
 
 #endif /* DEBOUNCED_KEYS_H_ */
