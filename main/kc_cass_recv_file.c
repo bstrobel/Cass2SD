@@ -30,7 +30,7 @@
 #define RECV_TIMER_ZERO_LOWER_THRESHOLD 120U
 #define RECV_TIMER_ZERO_UPPER_THRESHOLD 375U
 #define RECV_TIMER_ONE_LOWER_THRESHOLD RECV_TIMER_ZERO_UPPER_THRESHOLD
-#define RECV_TIMER_ONE_UPPER_THRESHOLD 750U		// KC85/3 has space cycles of as low as 660µs!
+#define RECV_TIMER_ONE_UPPER_THRESHOLD 620U		// KC85/3 has space cycles of as low as 660µs!
 #define RECV_TIMER_SPACE_LOWER_THRESHOLD RECV_TIMER_ONE_UPPER_THRESHOLD
 
 #define IS_SPACE(ctr) (ctr > (RECV_TIMER_SPACE_LOWER_THRESHOLD/8))
@@ -91,6 +91,7 @@ volatile uint8_t block_cntr = 0;
 volatile uint16_t vorton_cntr = 0;
 volatile uint16_t space_cntr = 0;
 volatile uint16_t cntr_val = 0;
+volatile uint8_t last_block_nr = 255;
 
 static void reset_recv_state() {
 	STOP_TIMER1;
@@ -100,6 +101,7 @@ static void reset_recv_state() {
 	block_cntr = 0;
 	buf_idx = 0;
 	file_name_on_disk[0] = 0;
+	last_block_nr = 255;
 }
 
 // should only be fired when timer is not reset before,
@@ -340,30 +342,37 @@ void kc_cass_handle_recv_file() {
 					else {
 						display_upd_recvinfo(buf[0]);
 					}
-
-					fr = f_write(&fhdl, buf, DISK_BLOCK_SIZE, &bytes_written);
+					// because of noise and synching on the first or second half of the period
+					// it could happen that we save save blocks multiple times
+					// this needs to be avoided, so we remember the last saved block number
+					// this assumes that the KC never sends the same block multiple times in a row
+					if (buf[0] != last_block_nr) {
+						fr = f_write(&fhdl, buf, DISK_BLOCK_SIZE, &bytes_written);
+						if (fr != FR_OK || bytes_written != DISK_BLOCK_SIZE) {
+							reset_recv_state();
+							f_close(&fhdl);
+							if (fr != FR_OK) {
+								disp_fr_err(fr);
+							}
+							disp_msg_p(msg_error_str,PSTR("WRITE FILE"));
+							break;
+						}
+						last_block_nr = buf[0];
+					}
 					#ifdef DEBUG_RECV_TIMER
 					MONITOR_RECV_PIN2_LOW;
 					#endif
-					if (fr != FR_OK || bytes_written != DISK_BLOCK_SIZE) {
-						reset_recv_state();
-						f_close(&fhdl);
-						if (fr != FR_OK) {
-							disp_fr_err(fr);
-						}
-						disp_msg_p(msg_error_str,PSTR("WRITE FILE"));
-						break;
-					}
 					// stop the receiving process if we are in a TIMEOUT state
 					// this is the intended exit of the receiving process
 					if (_recv_state == RECV_BIT_TIMEOUT) {
-						reset_recv_state();
+						STOP_TIMER1;
 						f_close(&fhdl);
+						disp_msg_p(msg_info_saved_str,PSTR(""));
+						display_by_name(file_name_on_disk, false);
 						#ifdef DEBUG_RECV_TIMER
 						MONITOR_RECV_PIN1_LOW;
 						#endif
-						disp_msg_p(msg_info_saved_str,PSTR(""));
-						display_by_name(file_name_on_disk, false);
+						reset_recv_state(); // we can't call this before display_by_name because it invalidates file_name_on_disk
 					}
 					block_cntr++;
 					if (block_cntr == 0) {
