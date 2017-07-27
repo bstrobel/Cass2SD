@@ -63,7 +63,7 @@ so gemeint._
 
 ## Dateiformate:
 - Meine Erkenntnisse hinsichtlich der Dateiformate basieren größtenteils auf Informationen von
-  [Volker Pohlers Seite](https://hc-ddr.hucki.net/wiki/doku.php/z9001:kassettenformate) und seinem Pascal-Quellcode
+  [Volker Pohlers Seite](https://hc-ddr.hucki.net/wiki/doku.php/z9001:kassettenformate) und dem Pascal-Quellcode
   seiner angepassten KCLOAD Version. _And dieser Stelle ein herzliches Dankeschön an Volker für sein informative und gut
   gepflegte Seite!_
 - **Gespeichert** wird im verbreiteten TAP-Format mit folgenden Eigenschaften:
@@ -86,13 +86,14 @@ so gemeint._
 ## To Do
 - Kompletten Schaltplan zeichnen, da die Schaltung zum großen Teil bisher nur auf dem Steckbrett existiert.
 - Leiterplatte entwerfen und fertigen lassen.
+- Compilierte Dateien hochladen und Anleitung erstellen, wie sie in einen AVR geladen werden können.
 - Möglichkeit implementieren um Einstellungen über ein Menü vorzunehmen und im EEPROM zu speichern.
 - Möglichkeit Dateien und Verzeichnisse zu löschen.
 - Möglichkeit Verzeichnisse mit einem Standardnamen anzulegen (DIR1, DIR2, ...).
 - Noch mehr Details aus dem FCB anzeigen (Anfangs-, End-, Startadresse usw.).
 - Weitere 8-Bit Computer unterstützen wie Z1013, Poly880 usw.
 
-## Danksagungen / Thanks / Links
+## Danksagungen/Thanks/Links
 - [Volker Pohlers für deine sehr informative Seite zum Thema DDR-Computer](https://hc-ddr.hucki.net)
 - [Ulrich Zander für deine sehr informative Seite vor allem zum Thema Z9001](http://www.sax.de/~zander/index2h.html)
 - [Elm Chan for your high quality FatFs library](http://elm-chan.org/fsw/ff/00index_e.html)
