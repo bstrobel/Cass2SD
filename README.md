@@ -97,4 +97,4 @@ so gemeint._
 - [Volker Pohlers für deine sehr informative Seite zum Thema DDR-Computer](https://hc-ddr.hucki.net)
 - [Ulrich Zander für deine sehr informative Seite vor allem zum Thema Z9001](http://www.sax.de/~zander/index2h.html)
 - [Elm Chan for your high quality FatFs library](http://elm-chan.org/fsw/ff/00index_e.html)
-- [Peter Fleury für deine LDC Bibliothek und die sehr nützlichen Ausgabefunktionen dazu](http://homepage.hispeed.ch/peterfleury/avr-software.html#libs)
+- [Peter Fleury für deine LCD Bibliothek und die sehr nützlichen Ausgabefunktionen dazu](http://homepage.hispeed.ch/peterfleury/avr-software.html#libs)
