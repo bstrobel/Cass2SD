@@ -240,7 +240,9 @@ void kc_cass_recv_file_init() {
 	EIFR &= _BV(INT0); // clear int flag reg
 	EIMSK |= _BV(INT0); // enable int INT0
 	EICRA = _BV(ISC00); // any change in logical level on pin will generate int
-	OCR1A = RECV_TIMER_TIMEOUT_CNT/8U; // set TOP of counter
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		OCR1A = RECV_TIMER_TIMEOUT_CNT/8U; // set TOP of counter, writing to 16bit register must be atomic!
+	}
 	TCCR1A = 0; // COM1[A,B][1,0]=0 => Compare Output Mode=normal; WGM[10,11]=0 => Normal or CTC mode
 	reset_recv_state();
 }

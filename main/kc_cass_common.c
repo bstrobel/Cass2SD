@@ -255,34 +255,54 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 	// it is RAW, we have to create a FCB
 	memset(start_buf_ptr,0x0,block_len);
 	// we reuse the fcb_mc pointer created earlier
-	for (uint8_t i=0; i<8; i++) {
-		if (Finfo->fname + i < ext) {
-			fcb->dateiname[i] = Finfo->fname[i];
+	int8_t dot_index = -1;
+	uint8_t fname_idx=0;
+	bool end_reached = false;
+	for (uint8_t i = 0; i < LEN_DATEINAME; i++, fname_idx++) {
+		if (Finfo->fname[fname_idx] == 0) {
+			end_reached = true;
+		}
+		if (dot_index < 0 && Finfo->fname[i] == '.') {
+			dot_index = i;
+		}
+		if (dot_index >= 0 || end_reached) {
+			fcb->dateiname[i] = 0x20;
 		}
 		else {
-			fcb->dateiname[i] = 0x20;
+			fcb->dateiname[i] = Finfo->fname[fname_idx];
 		}
 	}
-	bool end_reached = false;
-	for (uint8_t i=0; i<3; i++) {
-		if (!end_reached && ext[i+1])
-		fcb->dateityp[i] = ext[i+1];
-		else
-		{
-			end_reached=true;
-			fcb->dateiname[i] = 0x20;
+	for (uint8_t i = 0; i<LEN_DATEITYP; i++, fname_idx++) {
+		if (Finfo->fname[fname_idx] == 0) {
+			end_reached = true;
+		}
+		if (end_reached) {
+			fcb->dateityp[i] = 0x20;
+		}
+		else {
+			fcb->dateiname[i] = Finfo->fname[fname_idx];
 		}
 	}
-	fcb->aadr = 0x300;
+	#define AADR 0x0200
+	fcb->aadr_L = AADR % 0x100;
+	fcb->aadr_H = AADR / 0x100;
 	number_of_blocks = (uint8_t)((Finfo->fsize / block_len) + 1);
 	if (HAS_NO_BLOCKNR) {
-		fcb->eadr = 0x300 + Finfo->fsize;
+		fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize);
+		fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize) >> 8);
 	}
 	else {
-		fcb->eadr = 0x300 + (Finfo->fsize - number_of_blocks);
+		fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize - number_of_blocks);
+		fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize - number_of_blocks) >> 8);
 	}
-	fcb->sadr = 0xffff;
-
+	fcb->sadr_H = 0;
+	fcb->sadr_L = 0;
+	fcb->byte_18 = FCB_BYTE18_NOSTART;
+	// Finally we rewind the file to the beginning
+	if (disp_fr_err(f_lseek(&fhdl, 0))) {
+		f_close(&fhdl);
+		return false;
+	}
 	return true;
 }
 

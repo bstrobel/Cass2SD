@@ -88,18 +88,32 @@ extern const char tap_header_str[] PROGMEM;
 #define LEN_DATEINAME 8
 #define LEN_DATEITYP 3
 
+#define FCB_BYTE18_NOSTART 0x02
+#define FCB_BYTE18_START_RELOCATE 0x03
+#define FCB_BYTE18_START_NORELOCATE4 0x04
+#define FCB_BYTE18_START_NORELOCATE5 0x05
+#define FCB_BYTE18_START_NORELOCATE6 0x06
+#define FCB_BYTE18_START_NORELOCATE7 0x07
+
 typedef struct{
-	char dateiname[LEN_DATEINAME];
-	char dateityp[LEN_DATEITYP];
+	char dateiname[LEN_DATEINAME]; // NOT null terminated file name, filled with 0x20 if shorter than 8 characters
+	char dateityp[LEN_DATEITYP]; // same as dateiname[]
 	uint8_t ext1;
 	uint8_t ext2;
 	uint8_t psum;
 	uint8_t arb;
 	uint8_t blnr;
-	uint8_t lblnr;
-	uint16_t aadr;
-	uint16_t eadr;
-	uint16_t sadr;
+	 // byte_18 is special for KC85/3 (source - KC85/3 Systemhandbuch):
+	 // 0x02 -> only load, no start, sadr_L + sadr_H can be 0
+	 // 0x03 -> start after load, recalculate start address if loaded relatively
+	 // 0x04..0x07 -> start after load, no recalculation of start address if loaded relatively
+	uint8_t byte_18;
+	uint8_t aadr_L;
+	uint8_t aadr_H;
+	uint8_t eadr_L;
+	uint8_t eadr_H;
+	uint8_t sadr_L;
+	uint8_t sadr_H;
 	uint8_t sby;
 } KC_FCB;
 
