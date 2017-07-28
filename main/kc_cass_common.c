@@ -154,6 +154,64 @@ static bool detect_block_len() {
 	return true;
 }
 
+static bool create_fcb_from_filename(FILINFO* Finfo) {
+	KC_FCB* fcb = (KC_FCB*) (start_buf_ptr);
+	memset(buf,0x0,DATA_BUF_SIZE);
+	int8_t dot_index = -1;
+	uint8_t fname_idx=0;
+	bool end_reached = false;
+	for (uint8_t i = 0; i < LEN_DATEINAME; i++, fname_idx++) {
+		if (Finfo->fname[fname_idx] == 0) {
+			end_reached = true;
+		}
+		if (dot_index < 0 && Finfo->fname[i] == '.') {
+			dot_index = i;
+		}
+		if (dot_index >= 0 || end_reached) {
+			fcb->dateiname[i] = 0x20;
+		}
+		else {
+			fcb->dateiname[i] = Finfo->fname[fname_idx];
+		}
+	}
+	if (dot_index < 0) {
+		// still no dot, so it must be there at the current fname_idx -> skipping
+		fname_idx++;
+	}
+	for (uint8_t i = 0; i<LEN_DATEITYP; i++, fname_idx++) {
+		if (Finfo->fname[fname_idx] == 0) {
+			end_reached = true;
+		}
+		if (end_reached) {
+			fcb->dateityp[i] = 0x20;
+		}
+		else {
+			fcb->dateityp[i] = Finfo->fname[fname_idx];
+		}
+	}
+	#define AADR 0x0200
+	fcb->aadr_L = AADR % 0x100;
+	fcb->aadr_H = AADR / 0x100;
+	number_of_blocks = (uint8_t)((Finfo->fsize / block_len) + 1);
+	if (HAS_NO_BLOCKNR) {
+		fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize);
+		fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize) >> 8);
+	}
+	else {
+		fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize - number_of_blocks);
+		fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize - number_of_blocks) >> 8);
+	}
+	fcb->sadr_H = 0;
+	fcb->sadr_L = 0;
+	fcb->byte_18 = FCB_BYTE18_NOSTART;
+	// Finally we rewind the file to the beginning
+	if (disp_fr_err(f_lseek(&fhdl, 0))) {
+		f_close(&fhdl);
+		return false;
+	}
+	return true;
+}
+
 static bool check_non_tap_types(FILINFO* Finfo) {
 	// non-TAP files may have the block numbers in the file or not
 	// this determines the block_len:
@@ -227,62 +285,20 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 	}
 	
 	// No BASIC FCB and no BASIC extension, now check for regular FCB header
-	KC_FCB* fcb = (KC_FCB*) (buf + 1);
-	for (uint8_t i=0; i < LEN_DATEINAME + LEN_DATEITYP; i++) {
-		if ((fcb->dateiname[i] < 0x20 || fcb->dateiname[i] > 0x7f) && fcb->dateiname[i] != 0) {
+	KC_FCB* fcb = (KC_FCB*) (start_buf_ptr);
+	for (uint8_t j=0; j < LEN_DATEINAME; j++) {
+		// We accept 0x0 bytes in the dateiname and dateityp area of FCB, but the first character must not be 0!
+		if (fcb->dateiname[0] == 0 || (fcb->dateiname[j] > 0 && fcb->dateiname[j] < 0x20) || fcb->dateiname[j] < 0)  {
 			// found unprintable character -> cannot be a real fcb
 			kc_file_type = RAW;
-			// it is RAW, we have to create a FCB
-			memset(start_buf_ptr,0x0,block_len);
-			int8_t dot_index = -1;
-			uint8_t fname_idx=0;
-			bool end_reached = false;
-			for (uint8_t i = 0; i < LEN_DATEINAME; i++, fname_idx++) {
-				if (Finfo->fname[fname_idx] == 0) {
-					end_reached = true;
-				}
-				if (dot_index < 0 && Finfo->fname[i] == '.') {
-					dot_index = i;
-				}
-				if (dot_index >= 0 || end_reached) {
-					fcb->dateiname[i] = 0x20;
-				}
-				else {
-					fcb->dateiname[i] = Finfo->fname[fname_idx];
-				}
-			}
-			for (uint8_t i = 0; i<LEN_DATEITYP; i++, fname_idx++) {
-				if (Finfo->fname[fname_idx] == 0) {
-					end_reached = true;
-				}
-				if (end_reached) {
-					fcb->dateityp[i] = 0x20;
-				}
-				else {
-					fcb->dateiname[i] = Finfo->fname[fname_idx];
-				}
-			}
-			#define AADR 0x0200
-			fcb->aadr_L = AADR % 0x100;
-			fcb->aadr_H = AADR / 0x100;
-			number_of_blocks = (uint8_t)((Finfo->fsize / block_len) + 1);
-			if (HAS_NO_BLOCKNR) {
-				fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize);
-				fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize) >> 8);
-			}
-			else {
-				fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize - number_of_blocks);
-				fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize - number_of_blocks) >> 8);
-			}
-			fcb->sadr_H = 0;
-			fcb->sadr_L = 0;
-			fcb->byte_18 = FCB_BYTE18_NOSTART;
-			// Finally we rewind the file to the beginning
-			if (disp_fr_err(f_lseek(&fhdl, 0))) {
-				f_close(&fhdl);
-				return false;
-			}
-			return true;
+			return create_fcb_from_filename(Finfo);
+		}
+	}
+	for (uint8_t j=0; j < LEN_DATEITYP; j++) {
+		if ((fcb->dateityp[j] > 0 && fcb->dateityp[j] < 0x20) || fcb->dateityp[j] < 0)  {
+			// found unprintable character -> cannot be a real fcb
+			kc_file_type = RAW;
+			return create_fcb_from_filename(Finfo);
 		}
 	}
 	// we found a valid FCB but dont know what it is.
