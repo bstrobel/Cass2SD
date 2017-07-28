@@ -228,81 +228,66 @@ static bool check_non_tap_types(FILINFO* Finfo) {
 	
 	// No BASIC FCB and no BASIC extension, now check for regular FCB header
 	KC_FCB* fcb = (KC_FCB*) (buf + 1);
-	kc_file_type = OTHER_THAN_BASIC;
-	for (uint8_t i=0; i<8; i++) {
-		if ((fcb->dateiname[i] < 0x21 || fcb->dateiname[i] > 0x7f) && fcb->dateiname[i] != 0) {
+	for (uint8_t i=0; i < LEN_DATEINAME + LEN_DATEITYP; i++) {
+		if ((fcb->dateiname[i] < 0x20 || fcb->dateiname[i] > 0x7f) && fcb->dateiname[i] != 0) {
 			// found unprintable character -> cannot be a real fcb
 			kc_file_type = RAW;
-			break;
-		}
-		if (kc_file_type == OTHER_THAN_BASIC) {
-			// Filename is ok, now we check the file extension
-			for (uint8_t i=0; i<3; i++) {
-				if ((fcb->dateityp[i] < 0x21 || fcb->dateityp[i] > 0x7f) && fcb->dateityp[i] != 0) {
-					// found unprintable character -> cannot be a real fcb
-					kc_file_type = RAW;
-					break;
+			// it is RAW, we have to create a FCB
+			memset(start_buf_ptr,0x0,block_len);
+			int8_t dot_index = -1;
+			uint8_t fname_idx=0;
+			bool end_reached = false;
+			for (uint8_t i = 0; i < LEN_DATEINAME; i++, fname_idx++) {
+				if (Finfo->fname[fname_idx] == 0) {
+					end_reached = true;
+				}
+				if (dot_index < 0 && Finfo->fname[i] == '.') {
+					dot_index = i;
+				}
+				if (dot_index >= 0 || end_reached) {
+					fcb->dateiname[i] = 0x20;
+				}
+				else {
+					fcb->dateiname[i] = Finfo->fname[fname_idx];
 				}
 			}
-			if (kc_file_type == OTHER_THAN_BASIC) {
-				// now we're as sure as possible that we have a regular FCB
-				number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
-				return true;
+			for (uint8_t i = 0; i<LEN_DATEITYP; i++, fname_idx++) {
+				if (Finfo->fname[fname_idx] == 0) {
+					end_reached = true;
+				}
+				if (end_reached) {
+					fcb->dateityp[i] = 0x20;
+				}
+				else {
+					fcb->dateiname[i] = Finfo->fname[fname_idx];
+				}
 			}
+			#define AADR 0x0200
+			fcb->aadr_L = AADR % 0x100;
+			fcb->aadr_H = AADR / 0x100;
+			number_of_blocks = (uint8_t)((Finfo->fsize / block_len) + 1);
+			if (HAS_NO_BLOCKNR) {
+				fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize);
+				fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize) >> 8);
+			}
+			else {
+				fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize - number_of_blocks);
+				fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize - number_of_blocks) >> 8);
+			}
+			fcb->sadr_H = 0;
+			fcb->sadr_L = 0;
+			fcb->byte_18 = FCB_BYTE18_NOSTART;
+			// Finally we rewind the file to the beginning
+			if (disp_fr_err(f_lseek(&fhdl, 0))) {
+				f_close(&fhdl);
+				return false;
+			}
+			return true;
 		}
 	}
-
-	// it is RAW, we have to create a FCB
-	memset(start_buf_ptr,0x0,block_len);
-	// we reuse the fcb_mc pointer created earlier
-	int8_t dot_index = -1;
-	uint8_t fname_idx=0;
-	bool end_reached = false;
-	for (uint8_t i = 0; i < LEN_DATEINAME; i++, fname_idx++) {
-		if (Finfo->fname[fname_idx] == 0) {
-			end_reached = true;
-		}
-		if (dot_index < 0 && Finfo->fname[i] == '.') {
-			dot_index = i;
-		}
-		if (dot_index >= 0 || end_reached) {
-			fcb->dateiname[i] = 0x20;
-		}
-		else {
-			fcb->dateiname[i] = Finfo->fname[fname_idx];
-		}
-	}
-	for (uint8_t i = 0; i<LEN_DATEITYP; i++, fname_idx++) {
-		if (Finfo->fname[fname_idx] == 0) {
-			end_reached = true;
-		}
-		if (end_reached) {
-			fcb->dateityp[i] = 0x20;
-		}
-		else {
-			fcb->dateiname[i] = Finfo->fname[fname_idx];
-		}
-	}
-	#define AADR 0x0200
-	fcb->aadr_L = AADR % 0x100;
-	fcb->aadr_H = AADR / 0x100;
-	number_of_blocks = (uint8_t)((Finfo->fsize / block_len) + 1);
-	if (HAS_NO_BLOCKNR) {
-		fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize);
-		fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize) >> 8);
-	}
-	else {
-		fcb->eadr_L = (uint8_t)(AADR + Finfo->fsize - number_of_blocks);
-		fcb->eadr_H = (uint8_t)((AADR + Finfo->fsize - number_of_blocks) >> 8);
-	}
-	fcb->sadr_H = 0;
-	fcb->sadr_L = 0;
-	fcb->byte_18 = FCB_BYTE18_NOSTART;
-	// Finally we rewind the file to the beginning
-	if (disp_fr_err(f_lseek(&fhdl, 0))) {
-		f_close(&fhdl);
-		return false;
-	}
+	// we found a valid FCB but dont know what it is.
+	kc_file_type = OTHER_THAN_BASIC;
+	number_of_blocks = (uint8_t)(Finfo->fsize / block_len);
 	return true;
 }
 
