@@ -305,4 +305,4 @@ $RECYCLE.BIN/
 *.logicdata
 
 # Eagle backup files
-*.[bs]#[1..9]
+*.[bs]#?
