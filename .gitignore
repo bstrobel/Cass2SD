@@ -306,3 +306,5 @@ $RECYCLE.BIN/
 
 # Eagle backup files
 *.[bs]#?
+*.sch.lck
+*.brd.lck
