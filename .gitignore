@@ -303,3 +303,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 *.logicdata
+
+# Eagle backup files
+*.[bs]#[1..9]
