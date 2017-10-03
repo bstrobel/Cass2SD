@@ -15,9 +15,15 @@
 
 volatile SEND_STATE send_state = DONE;
 
-#define OCR_SPACE_SENDFILE (F_CPU / 64 / 571 / 2 - 1) //108
-#define OCR_BIT_ONE_SENDFILE (F_CPU / 64 / 1087 / 2 - 1) //56
-#define OCR_BIT_ZERO_SENDFILE (F_CPU / 64 / 2000 / 2 - 1) //30
+#define SEND_TIMER_PRESCALER 64UL
+#define SEND_TIMER_TICK_USEC ((SEND_TIMER_PRESCALER * 1000000UL) / F_CPU)  // 4탎ec for 16MHz
+#define SEND_TIMER_SPACE_USEC (1800UL / 2UL) // Space period time Z9001 1750탎ec, KC85/3 1820탎ec
+#define SEND_TIMER_ONE_USEC (950UL / 2UL) // One period time Z9001 920탎ec, KC85/3 980탎ec
+#define SEND_TIMER_ZERO_USEC (520UL / 2UL) // Zero period time Z9001 500탎ec, KC85/3 540탎ec
+
+#define OCR_SPACE_SENDFILE ((SEND_TIMER_SPACE_USEC / SEND_TIMER_TICK_USEC) - 1UL) // 224 for 16MHz/64
+#define OCR_BIT_ONE_SENDFILE ((SEND_TIMER_ONE_USEC / SEND_TIMER_TICK_USEC) - 1UL) // 117 for 16MHz/64
+#define OCR_BIT_ZERO_SENDFILE ((SEND_TIMER_ZERO_USEC / SEND_TIMER_TICK_USEC) - 1UL) // 64 for 16MHz/64
 
 static void config_and_start_timer_sendfile(uint8_t ocr_val) {
 	OCR0A = ocr_val;
@@ -26,7 +32,11 @@ static void config_and_start_timer_sendfile(uint8_t ocr_val) {
 	TCCR0A = _BV(WGM01); // CTC mode -> TOP is OCR0A
 	TIMSK0 = _BV(OCIE0A); // allow OCA interrupt generation
 	// timer is started with the next command!
-	TCCR0B = _BV(CS01)|_BV(CS00); // 64 prescaler -> 125000Hz, 8탎/tick for F_CPU=8MHz
+	#if (SEND_TIMER_PRESCALER == 64U)
+		TCCR0B = _BV(CS01)|_BV(CS00); // 64 prescaler -> 250kHz, 4탎/tick for F_CPU=16MHz
+	#else
+		#error "Prescaler initialization for TIMER0 needs to be adjusted!"
+	#endif
 }
 
 ISR(TIMER0_COMPA_vect) {

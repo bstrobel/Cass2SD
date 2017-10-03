@@ -21,21 +21,23 @@
 #include "../lcd/lcd.h"
 #include "kc_cass_recv_file.h"
 
-// Clock_Timer1(Prescaler=8MHz/64=125kHz -> 1 tick = 8탎
+// Clock_Timer1(Prescaler=16MHz/64=250kHz -> 1 tick = 4탎
 // f_One=1000Hz -> 1ms/2 => 500탎
 // f_Zero=2000Hz -> 500탎/2 => 250탎
 // f_Space=500Hz -> 2ms/2 => 1000탎
 // all values in RECV_TIMER_... in 탎!
-#define RECV_TIMER_TIMEOUT_CNT 160000U			// 160ms
+#define RECV_TIMER_PRESCALER 64U
+#define RECV_TIMER_TICK_USEC ((RECV_TIMER_PRESCALER * 1000000UL) / F_CPU)  // 4탎ec for 16MHz
+#define RECV_TIMER_TIMEOUT_CNT 160000UL			// 160ms
 #define RECV_TIMER_ZERO_LOWER_THRESHOLD 120U
-#define RECV_TIMER_ZERO_UPPER_THRESHOLD 375U
+#define RECV_TIMER_ZERO_UPPER_THRESHOLD 370U
 #define RECV_TIMER_ONE_LOWER_THRESHOLD RECV_TIMER_ZERO_UPPER_THRESHOLD
 #define RECV_TIMER_ONE_UPPER_THRESHOLD 620U		// KC85/3 has space cycles of as low as 660탎!
 #define RECV_TIMER_SPACE_LOWER_THRESHOLD RECV_TIMER_ONE_UPPER_THRESHOLD
 
-#define IS_SPACE(ctr) (ctr > (RECV_TIMER_SPACE_LOWER_THRESHOLD/8))
-#define IS_ONE(ctr) (ctr > (RECV_TIMER_ONE_LOWER_THRESHOLD/8) && ctr <= (RECV_TIMER_ONE_UPPER_THRESHOLD/8))
-#define IS_ZERO(ctr) (ctr > (RECV_TIMER_ZERO_LOWER_THRESHOLD/8) && ctr <= (RECV_TIMER_ZERO_UPPER_THRESHOLD/8))
+#define IS_SPACE(ctr) (ctr > (RECV_TIMER_SPACE_LOWER_THRESHOLD/RECV_TIMER_TICK_USEC))
+#define IS_ONE(ctr) (ctr > (RECV_TIMER_ONE_LOWER_THRESHOLD/RECV_TIMER_TICK_USEC) && ctr <= (RECV_TIMER_ONE_UPPER_THRESHOLD/RECV_TIMER_TICK_USEC))
+#define IS_ZERO(ctr) (ctr > (RECV_TIMER_ZERO_LOWER_THRESHOLD/RECV_TIMER_TICK_USEC) && ctr <= (RECV_TIMER_ZERO_UPPER_THRESHOLD/RECV_TIMER_TICK_USEC))
 
 // Timer config
 // TIMSK1 = _BV(OCIE1A); // allow interrupts for OCR1A match
@@ -43,12 +45,16 @@
 // TCCR1B = _BV(WGM12) | _BV(CS11); // Enable timer in CTC-Mode (WGM12), pre-scaler = 8 (CS11), 1MHz timer clock
 // TCCR1B = _BV(CS11) | _BV(CS10); // Enable timer in Normal-Mode, TOP=MAX, pre-scaler = 64 (CS11,CS10), 125kHz timer clock
 // TCCR1B = _BV(WGM12) | _BV(CS11) | _BV(CS10); // Enable timer in CTC-Mode (WGM12), pre-scaler = 64 (CS11,CS10), 125kHz timer clock
+#if (RECV_TIMER_PRESCALER == 64)
 #define START_TIMER1 {\
 	TCCR1B = 0; \
 	TCNT1 = 0; \
 	TIMSK1 = _BV(OCIE1A); \
 	TCCR1B = _BV(WGM12) | _BV(CS11) | _BV(CS10); \
 }
+#else
+#error "Prescaler initialization for TIMER1 needs to be adjusted!"
+#endif
 
 
 // TIMSK1 = 0; // disallow all interrupts for timer1
@@ -127,9 +133,9 @@ ISR(INT0_vect) {
 	cntr_val = TCNT1;
 	if (is_time_measure_running) {
 		START_TIMER1; // need to start it to catch the last timeout
-	#ifdef DEBUG_RECV_TIMER
-	MONITOR_RECV_PIN1_LOW;
-	#endif
+		#ifdef DEBUG_RECV_TIMER
+		MONITOR_RECV_PIN1_LOW;
+		#endif
 		if (IS_SPACE(cntr_val)) {
 			if (recv_state != RECV_HANDLER_ACK) {
 				recv_state = RECV_OVERRUN_OCCURED;

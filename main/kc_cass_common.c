@@ -57,10 +57,10 @@ ISR(TIMER2_COMPA_vect)
 void disk_and_debounce_timer_init (void)
 {
 	/* Start 3906.25Hz system timer with TC0 */
-	// F=8MHz, prescaler=256 => 1 tick = 32탎
-	// TOP=255 => max timer tick = 8.192ms
+	// F=16MHz, prescaler=256 => 1 tick = 16탎
+	// TOP=255 => max timer tick = 4096ms
 	TCCR2A = _BV(WGM21); // CTC mode
-	OCR2A = 7; // 8 * 32탎 = 0.256ms => 3.90625kHz
+	OCR2A = 15; // 16 * 16탎 = 0.256ms => 3.90625kHz
 	TCCR2B = _BV(CS22) | _BV(CS21); // 256 prescaler
 	TIMSK2 = _BV(OCIE2A); // enable interrup at OC match A
 }
